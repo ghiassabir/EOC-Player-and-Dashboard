@@ -1455,6 +1455,23 @@ if(backBtnFooter) {
 }
 
 // --- Event Listeners for other UI elements ---
+
+// --- CORRECTED NAVIGATION LOGIC ---
+if(returnToHomeBtn) {
+    returnToHomeBtn.addEventListener('click', () => {
+        clearSessionState();
+        const lastQuizName = currentTestFlow[0]; // In EOC, there's only one module in the flow
+        if (lastQuizName) {
+            // Navigate back to the chapter page for the quiz just taken
+            window.location.href = `chapter.html?id=${lastQuizName}`;
+        } else {
+            // Fallback to the main hub
+            window.location.href = 'index.html';
+        }
+    });
+}
+
+/*
 if(returnToHomeBtn) {
     returnToHomeBtn.addEventListener('click', () => {
         console.log(`DEBUG returnToHomeBtn: Clicked. globalOriginPageId: '${globalOriginPageId}'`);
@@ -1474,6 +1491,8 @@ if(returnToHomeBtn) {
         }
     });
 }
+*/
+
 if(calculatorBtnHeader) calculatorBtnHeader.addEventListener('click', () => toggleModal(calculatorOverlay, true));
 if(calculatorCloseBtn) calculatorCloseBtn.addEventListener('click', () => toggleModal(calculatorOverlay, false));
 if(referenceBtnHeader) referenceBtnHeader.addEventListener('click', () => toggleModal(referenceSheetPanel, true));
