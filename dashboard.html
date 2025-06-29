@@ -168,7 +168,7 @@
             const feedbackContent = document.getElementById('feedback-content');
             const statusClass = q.is_correct ? 'status-correct' : 'status-incorrect';
             
-            let questionDisplay = `<p><b>${q.question_text || 'Question text not available.'}</b></p>`;
+            let questionDisplay = `<p><b>${q.question_stem || 'Question text not available.'}</b></p>`;
             if (q.passage_content) {
                 questionDisplay = `<p><em>${q.passage_content}</em></p>` + questionDisplay;
             }
