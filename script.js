@@ -1457,6 +1457,7 @@ if(backBtnFooter) {
 // --- Event Listeners for other UI elements ---
 
 // --- CORRECTED NAVIGATION LOGIC ---
+/*
 if(returnToHomeBtn) {
     returnToHomeBtn.addEventListener('click', () => {
         clearSessionState();
@@ -1470,8 +1471,8 @@ if(returnToHomeBtn) {
         }
     });
 }
+*/
 
-/*
 if(returnToHomeBtn) {
     returnToHomeBtn.addEventListener('click', () => {
         console.log(`DEBUG returnToHomeBtn: Clicked. globalOriginPageId: '${globalOriginPageId}'`);
@@ -1491,7 +1492,7 @@ if(returnToHomeBtn) {
         }
     });
 }
-*/
+
 
 if(calculatorBtnHeader) calculatorBtnHeader.addEventListener('click', () => toggleModal(calculatorOverlay, true));
 if(calculatorCloseBtn) calculatorCloseBtn.addEventListener('click', () => toggleModal(calculatorOverlay, false));
