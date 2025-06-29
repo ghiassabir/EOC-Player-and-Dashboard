@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EOC Quiz Hub - The SAT Hub</title>
     <style>
-        /* Extracted and adapted from style (1).css */
+        /* Extracted and adapted from your style files */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -187,11 +187,10 @@
 
                 let html = '';
                 chapterList.forEach(chapter => {
-                    // This link now points to quiz.html and passes parameters the new script expects
                     html += `
                         <li>
                             <span class="icon">📖</span>
-                            <a title="${chapter.title}" href="quiz.html?quiz_name=${chapter.id}&originPageId=index&source=EOC">${chapter.title}</a>
+                            <a title="${chapter.title}" href="chapter.html?id=${chapter.id}">${chapter.title}</a>
                         </li>
                     `;
                 });
