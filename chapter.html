@@ -3,62 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EOC Chapter Launcher</title>
+    <title>Chapter Hub - The SAT Hub</title>
     <style>
-        /* Extracted from your provided index (4).html for consistency */
-        :root {
-            --bluebook-dark-blue: #0d2f5a; --bluebook-button-blue: #2563eb; --bluebook-button-blue-hover: #1d4ed8;
-            --bluebook-button-green: #16a34a; --bluebook-button-green-hover: #15803d; --bluebook-border-color: #cbd5e0;
-            --bluebook-text-color: #1e293b; --bluebook-light-text: #64748b; --bluebook-home-bg: #f0f4f8; --bluebook-card-bg: #ffffff;
+        /* Reusing styles from the main hub for consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333333;
+            line-height: 1.6;
         }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background-color: var(--bluebook-home-bg); }
-        .hub-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
-        .hub-card { background-color: var(--bluebook-card-bg); border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); padding: 2.5rem; width: 100%; max-width: 500px; text-align: center; }
-        .hub-card h1 { font-size: 1.75rem; font-weight: 700; color: var(--bluebook-dark-blue); margin-bottom: 0.5rem; }
-        .hub-card p { font-size: 1rem; color: var(--bluebook-light-text); margin-bottom: 2rem; }
-        .button-container { display: flex; flex-direction: column; gap: 1rem; }
-        .action-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border-radius: 0.5rem; cursor: pointer; text-decoration: none; border: 1px solid var(--bluebook-border-color); }
-        .start-quiz-btn { background-color: var(--bluebook-button-blue); color: white; border-color: var(--bluebook-button-blue); }
-        .start-quiz-btn:hover { background-color: var(--bluebook-button-blue-hover); }
-        .results-btn { background-color: var(--bluebook-button-green); color: white; border-color: var(--bluebook-button-green); }
-        .results-btn:hover { background-color: var(--bluebook-button-green-hover); }
-        .back-link { color: var(--bluebook-light-text); text-decoration: none; margin-top: 2rem; display: inline-block; }
+        .page-container {
+            width: 95%;
+            max-width: 900px; /* Smaller container for this simpler page */
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 0 15px 20px 15px;
+            min-height: 100vh;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .logo-top-left img {
+            height: 60px;
+            width: auto;
+            border-radius: 6px;
+            vertical-align: middle;
+        }
+        .page-header {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .page-header-title {
+            color: #2a5266;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .page-header-subtitle {
+            font-size: 1.125rem;
+            color: #555555;
+            margin-top: 5px;
+        }
+        .action-buttons-container {
+            text-align: center;
+            margin-top: 15px;
+            padding-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .action-buttons-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #2a5266;
+            color: #ffd700;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 1px solid #FFD700;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            margin: 0 8px 10px 8px;
+            min-width: 200px;
+        }
+        .action-button:hover {
+            background-color: #356a80;
+            color: #fff;
+        }
+        .back-link-container {
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .back-link {
+            color: #2a5266;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="hub-container">
-        <div class="hub-card">
-            <h1 id="chapter-title">Loading...</h1>
-            <p>Ready to test your knowledge?</p>
-            <div class="button-container">
-                <a class="action-btn start-quiz-btn" id="start-quiz-btn" href="#"><span>▶️</span><span>Start Quiz</span></a>
-                <a class="action-btn results-btn" id="view-results-btn" href="#"><span>📊</span><span>View Results</span></a>
+    <div class="page-container"> 
+        <div class="top-bar">
+            <div class="logo-top-left">
+                <img src="https://placehold.co/128x60/2a5266/ffd700?text=SAT+Hub" alt="The SAT Hub Logo" />
             </div>
-            <a href="index.html" class="back-link">← Back to Main Hub</a>
         </div>
-    </div>
-    <script>
-       document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const quizId = urlParams.get('id');
 
-            if (quizId) {
-                // Display the chapter ID as the title
-                document.getElementById('chapter-title').textContent = quizId.replace(/-/g, ' ');
+        <div class="page-header"> 
+            <h1 id="chapter-title" class="page-header-title">Loading Chapter...</h1> 
+            <p class="page-header-subtitle">What would you like to do?</p> 
+            
+            <div id="action-buttons" class="action-buttons-container" style="display: none;">
+                <a id="start-quiz-btn" href="#" class="action-button">Start Quiz</a>
+                <a id="view-results-btn" href="#" class="action-button">View Results</a>
+            </div>
+
+            <div class="back-link-container">
+                <a href="index.html" class="back-link">← Back to EOC Hub</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const allChapters = {
+                'EOC-M-C1': 'Chapter 1: Exponents & Radicals', 'EOC-M-C2': 'Chapter 2: Percent',
+                'EOC-M-C3': 'Chapter 3: Exponential & Linear Growth', 'EOC-M-C4': 'Chapter 4: Rates',
+                'EOC-M-C5': 'Chapter 5: Ratio & Proportion', 'EOC-M-C6': 'Chapter 6: Expressions',
+                'EOC-M-C7': 'Chapter 7: Constructing Models', 'EOC-M-C8': 'Chapter 8: Manipulating & Solving Equations',
+                'EOC-M-C9': 'Chapter 9: More Equation Solving Strategies', 'EOC-M-C10': 'Chapter 10: Systems of Equations',
+                'EOC-M-C11': 'Chapter 11: Inequalities', 'EOC-M-C12': 'Chapter 12: Word Problems',
+                'EOC-M-C13': 'Chapter 13: Min & Max Word Problems', 'EOC-M-C14': 'Chapter 14: Lines',
+                'EOC-M-C15': 'Chapter 15: Interpreting Linear Models', 'EOC-M-C16': 'Chapter 16: Functions',
+                'EOC-M-C17': 'Chapter 17: Quadratics', 'EOC-M-C18': 'Chapter 18: Synthetic Division',
+                'EOC-M-C19': 'Chapter 19: Complex Numbers', 'EOC-M-C20': 'Chapter 20: Absolute Value',
+                'EOC-M-C21': 'Chapter 21: Angles', 'EOC-M-C22': 'Chapter 22: Triangles',
+                'EOC-M-C23': 'Chapter 23: Circles', 'EOC-M-C24': 'Chapter 24: Trigonometry',
+                'EOC-M-C25': 'Chapter 25: Reading Data', 'EOC-M-C26': 'Chapter 26: Probability',
+                'EOC-M-C27': 'Chapter 27: Statistics 1', 'EOC-M-C28': 'Chapter 28: Statistics 2', 'EOC-M-C29': 'Chapter 29: Volume',
+                'EOC-G-C1': 'Chapter 1: Transitions', 'EOC-G-C2': 'Chapter 2: Specific Focus',
+                'EOC-G-C3': 'Chapter 3: Sentences & Fragments', 'EOC-G-C4': 'Chapter 4: Joining & Separating Sentences',
+                'EOC-G-C5': 'Chapter 5: Joining Sentences & Fragments', 'EOC-G-C6': 'Chapter 6: Non-Essential & Essential Clauses',
+                'EOC-G-C7': 'Chapter 7: Additional Comma Uses & Misuses', 'EOC-G-C8': 'Chapter 8: Verbs Agreements and Tense',
+                'EOC-G-C9': 'Chapter 9: Pronouns', 'EOC-G-C10': 'Chapter 10: Apostrophes', 'EOC-G-C11': 'Chapter 11: Modification',
+                'EOC-G-C12': 'Chapter 12: Parallel Structure', 'EOC-G-C13': 'Chapter 13: Word Pairs', 'EOC-G-C14': 'Chapter 14: Question Marks',
+                'EOC-R-C1': 'Chapter 1: Overview of SAT Reading', 'EOC-R-C2': 'Chapter 2: Vocabulary in Context',
+                'EOC-R-C3': 'Chapter 3: Making the Leap', 'EOC-R-C4': 'Chapter 4: The Big Picture',
+                'EOC-R-C5': 'Chapter 5: Literal Comprehension', 'EOC-R-C6': 'Chapter 6: Reading for Function',
+                'EOC-R-C7': 'Chapter 7: Text Completions', 'EOC-R-C8': 'Chapter 8: Supporting & Undermining',
+                'EOC-R-C9': 'Chapter 9: Graphs & Charts', 'EOC-R-C10': 'Chapter 10: Paired Passages'
+            };
+
+            const chapterTitleElement = document.getElementById('chapter-title');
+            const actionButtons = document.getElementById('action-buttons');
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const viewResultsBtn = document.getElementById('view-results-btn');
+            
+            // --- NEW localStorage LOGIC STARTS HERE ---
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeQuizId = urlParams.get('id');
+            const storageKey = 'lastEocQuizId';
+
+            if (activeQuizId) {
+                // If an ID is present in the URL, it is the source of truth.
+                // Use it and save it to localStorage for future return visits.
+                console.log(`ID found in URL: ${activeQuizId}. Saving to localStorage.`);
+                localStorage.setItem(storageKey, activeQuizId);
+            } else {
+                // If no ID is in the URL (like on a return visit),
+                // try to get the last used ID from localStorage.
+                console.log("No ID found in URL. Checking localStorage...");
+                activeQuizId = localStorage.getItem(storageKey);
+            }
+
+            // --- NEW localStorage LOGIC ENDS HERE ---
+
+
+            // Now, use the determined activeQuizId to set up the page
+            if (activeQuizId && allChapters[activeQuizId]) {
+                // Set the chapter title on the page
+                chapterTitleElement.textContent = allChapters[activeQuizId];
                 
-                // Set the correct links for the buttons
-                document.getElementById('start-quiz-btn').href = `quiz.html?quiz_name=${quizId}&originPageId=chapter&source=EOC`;
-                
-                // --- THIS IS THE CORRECTED PART ---
-                const resultsBtn = document.getElementById('view-results-btn');
-                resultsBtn.href = `dashboard.html?id=${quizId}`; // Link to the new dashboard
-                resultsBtn.style.opacity = '1';
-                resultsBtn.style.cursor = 'pointer';
-                resultsBtn.title = 'View results for this quiz';
-                // --- END OF CORRECTION ---
+                // Set the correct links for the buttons. The quiz player expects 'quiz_name'.
+                startQuizBtn.href = `quiz.html?quiz_name=${activeQuizId}&originPageId=chapter`;
+                // The dashboard needs to know which quiz results to look for.
+                viewResultsBtn.href = `dashboard.html?id=${activeQuizId}`;
+
+                // Show the buttons
+                actionButtons.style.display = 'flex';
 
             } else {
-                document.getElementById('chapter-title').textContent = 'Error: No Chapter Specified';
+                // Handle case where ID is missing from both URL and localStorage
+                chapterTitleElement.textContent = 'Chapter Not Found';
+                chapterTitleElement.style.color = 'red';
+                document.getElementById('page-header-subtitle').textContent = 'Please select a chapter from the main hub page.';
             }
         });
     </script>
