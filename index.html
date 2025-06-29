@@ -29,7 +29,7 @@
             background-color: #ffffff;
             border-bottom: 1px solid #e0e0e0;
         }
-        .logo-top-left img, .logo-bottom-right img {
+        .logo-top-left img {
             height: 60px;
             width: auto;
             border-radius: 6px;
@@ -73,7 +73,6 @@
             padding: 12px 20px;
             cursor: pointer;
             display: list-item;
-            border-bottom: 1px solid #356a80;
             font-weight: 600;
             transition: background-color 0.2s ease;
         }
@@ -140,7 +139,6 @@
             <div class="logo-top-left">
                 <img src="https://placehold.co/128x60/2a5266/ffd700?text=SAT+Hub" alt="The SAT Hub Logo" />
             </div>
-            <!-- Navigation buttons removed as requested -->
         </div>
 
         <div class="page-header"> 
@@ -149,32 +147,17 @@
         </div>
 
         <div class="syllabus-sections-container"> 
-            
             <details class="content-section" open> 
-                <summary>Math (29 Chapters)</summary>
-                <div class="content-body">
-                    <ul id="math-chapters">
-                        <!-- Math chapters will be populated by JavaScript -->
-                    </ul>
-                </div>
+                <summary>Math Chapters</summary>
+                <div class="content-body"><ul id="math-chapters"></ul></div>
             </details>
-
             <details class="content-section"> 
-                <summary>Grammar (14 Chapters)</summary>
-                <div class="content-body"> 
-                    <ul id="grammar-chapters">
-                        <!-- Grammar chapters will be populated by JavaScript -->
-                    </ul>
-                </div>
+                <summary>Grammar Chapters</summary>
+                <div class="content-body"><ul id="grammar-chapters"></ul></div>
             </details>
-
             <details class="content-section"> 
-                <summary>Reading (10 Chapters)</summary>
-                <div class="content-body"> 
-                    <ul id="reading-chapters">
-                        <!-- Reading chapters will be populated by JavaScript -->
-                    </ul>
-                </div>
+                <summary>Reading Chapters</summary>
+                <div class="content-body"><ul id="reading-chapters"></ul></div>
             </details>
         </div>
 
@@ -185,66 +168,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
             const chapters = {
                 math: [
-                    { id: 'EOC-M-C1', title: 'Chapter 1: Exponents & Radicals' },
-                    { id: 'EOC-M-C2', title: 'Chapter 2: Percent' },
-                    { id: 'EOC-M-C3', title: 'Chapter 3: Exponential & Linear Growth' },
-                    { id: 'EOC-M-C4', title: 'Chapter 4: Rates' },
-                    { id: 'EOC-M-C5', title: 'Chapter 5: Ratio & Proportion' },
-                    { id: 'EOC-M-C6', title: 'Chapter 6: Expressions' },
-                    { id: 'EOC-M-C7', title: 'Chapter 7: Constructing Models' },
-                    { id: 'EOC-M-C8', title: 'Chapter 8: Manipulating & Solving Equations' },
-                    { id: 'EOC-M-C9', title: 'Chapter 9: More Equation Solving Strategies' },
-                    { id: 'EOC-M-C10', title: 'Chapter 10: Systems of Equations' },
-                    { id: 'EOC-M-C11', title: 'Chapter 11: Inequalities' },
-                    { id: 'EOC-M-C12', title: 'Chapter 12: Word Problems' },
-                    { id: 'EOC-M-C13', title: 'Chapter 13: Min & Max Word Problems' },
-                    { id: 'EOC-M-C14', title: 'Chapter 14: Lines' },
-                    { id: 'EOC-M-C15', title: 'Chapter 15: Interpreting Linear Models' },
-                    { id: 'EOC-M-C16', title: 'Chapter 16: Functions' },
-                    { id: 'EOC-M-C17', title: 'Chapter 17: Quadratics' },
-                    { id: 'EOC-M-C18', title: 'Chapter 18: Synthetic Division' },
-                    { id: 'EOC-M-C19', title: 'Chapter 19: Complex Numbers' },
-                    { id: 'EOC-M-C20', title: 'Chapter 20: Absolute Value' },
-                    { id: 'EOC-M-C21', title: 'Chapter 21: Angles' },
-                    { id: 'EOC-M-C22', title: 'Chapter 22: Triangles' },
-                    { id: 'EOC-M-C23', title: 'Chapter 23: Circles' },
-                    { id: 'EOC-M-C24', title: 'Chapter 24: Trigonometry' },
-                    { id: 'EOC-M-C25', title: 'Chapter 25: Reading Data' },
-                    { id: 'EOC-M-C26', title: 'Chapter 26: Probability' },
-                    { id: 'EOC-M-C27', title: 'Chapter 27: Statistics 1' },
-                    { id: 'EOC-M-C28', title: 'Chapter 28: Statistics 2' },
-                    { id: 'EOC-M-C29', title: 'Chapter 29: Volume' }
+                    { id: 'EOC-M-C1', title: 'Chapter 1: Exponents & Radicals' },{ id: 'EOC-M-C2', title: 'Chapter 2: Percent' },{ id: 'EOC-M-C3', title: 'Chapter 3: Exponential & Linear Growth' },{ id: 'EOC-M-C4', title: 'Chapter 4: Rates' },{ id: 'EOC-M-C5', title: 'Chapter 5: Ratio & Proportion' },{ id: 'EOC-M-C6', title: 'Chapter 6: Expressions' },{ id: 'EOC-M-C7', title: 'Chapter 7: Constructing Models' },{ id: 'EOC-M-C8', title: 'Chapter 8: Manipulating & Solving Equations' },{ id: 'EOC-M-C9', title: 'Chapter 9: More Equation Solving Strategies' },{ id: 'EOC-M-C10', title: 'Chapter 10: Systems of Equations' },{ id: 'EOC-M-C11', title: 'Chapter 11: Inequalities' },{ id: 'EOC-M-C12', title: 'Chapter 12: Word Problems' },{ id: 'EOC-M-C13', title: 'Chapter 13: Min & Max Word Problems' },{ id: 'EOC-M-C14', title: 'Chapter 14: Lines' },{ id: 'EOC-M-C15', title: 'Chapter 15: Interpreting Linear Models' },{ id: 'EOC-M-C16', title: 'Chapter 16: Functions' },{ id: 'EOC-M-C17', title: 'Chapter 17: Quadratics' },{ id: 'EOC-M-C18', title: 'Chapter 18: Synthetic Division' },{ id: 'EOC-M-C19', title: 'Chapter 19: Complex Numbers' },{ id: 'EOC-M-C20', title: 'Chapter 20: Absolute Value' },{ id: 'EOC-M-C21', title: 'Chapter 21: Angles' },{ id: 'EOC-M-C22', title: 'Chapter 22: Triangles' },{ id: 'EOC-M-C23', title: 'Chapter 23: Circles' },{ id: 'EOC-M-C24', title: 'Chapter 24: Trigonometry' },{ id: 'EOC-M-C25', title: 'Chapter 25: Reading Data' },{ id: 'EOC-M-C26', title: 'Chapter 26: Probability' },{ id: 'EOC-M-C27', title: 'Chapter 27: Statistics 1' },{ id: 'EOC-M-C28', title: 'Chapter 28: Statistics 2' },{ id: 'EOC-M-C29', title: 'Chapter 29: Volume' }
                 ],
                 grammar: [
-                    { id: 'EOC-G-C1', title: 'Chapter 1: Transitions' },
-                    { id: 'EOC-G-C2', title: 'Chapter 2: Specific Focus' },
-                    { id: 'EOC-G-C3', title: 'Chapter 3: Sentences & Fragments' },
-                    { id: 'EOC-G-C4', title: 'Chapter 4: Joining & Separating Sentences' },
-                    { id: 'EOC-G-C5', title: 'Chapter 5: Joining Sentences & Fragments' },
-                    { id: 'EOC-G-C6', title: 'Chapter 6: Non-Essential & Essential Clauses' },
-                    { id: 'EOC-G-C7', title: 'Chapter 7: Additional Comma Uses & Misuses' },
-                    { id: 'EOC-G-C8', title: 'Chapter 8: Verbs Agreements and Tense' },
-                    { id: 'EOC-G-C9', title: 'Chapter 9: Pronouns' },
-                    { id: 'EOC-G-C10', title: 'Chapter 10: Apostrophes' },
-                    { id: 'EOC-G-C11', title: 'Chapter 11: Modification' },
-                    { id: 'EOC-G-C12', title: 'Chapter 12: Parallel Structure' },
-                    { id: 'EOC-G-C13', title: 'Chapter 13: Word Pairs' },
-                    { id: 'EOC-G-C14', title: 'Chapter 14: Question Marks' }
+                    { id: 'EOC-G-C1', title: 'Chapter 1: Transitions' },{ id: 'EOC-G-C2', title: 'Chapter 2: Specific Focus' },{ id: 'EOC-G-C3', title: 'Chapter 3: Sentences & Fragments' },{ id: 'EOC-G-C4', title: 'Chapter 4: Joining & Separating Sentences' },{ id: 'EOC-G-C5', title: 'Chapter 5: Joining Sentences & Fragments' },{ id: 'EOC-G-C6', title: 'Chapter 6: Non-Essential & Essential Clauses' },{ id: 'EOC-G-C7', title: 'Chapter 7: Additional Comma Uses & Misuses' },{ id: 'EOC-G-C8', title: 'Chapter 8: Verbs Agreements and Tense' },{ id: 'EOC-G-C9', title: 'Chapter 9: Pronouns' },{ id: 'EOC-G-C10', title: 'Chapter 10: Apostrophes' },{ id: 'EOC-G-C11', title: 'Chapter 11: Modification' },{ id: 'EOC-G-C12', title: 'Chapter 12: Parallel Structure' },{ id: 'EOC-G-C13', title: 'Chapter 13: Word Pairs' },{ id: 'EOC-G-C14', title: 'Chapter 14: Question Marks' }
                 ],
                 reading: [
-                    { id: 'EOC-R-C1', title: 'Chapter 1: Overview of SAT Reading' },
-                    { id: 'EOC-R-C2', title: 'Chapter 2: Vocabulary in Context' },
-                    { id: 'EOC-R-C3', title: 'Chapter 3: Making the Leap' },
-                    { id: 'EOC-R-C4', title: 'Chapter 4: The Big Picture' },
-                    { id: 'EOC-R-C5', title: 'Chapter 5: Literal Comprehension' },
-                    { id: 'EOC-R-C6', title: 'Chapter 6: Reading for Function' },
-                    { id: 'EOC-R-C7', title: 'Chapter 7: Text Completions' },
-                    { id: 'EOC-R-C8', title: 'Chapter 8: Supporting & Undermining' },
-                    { id: 'EOC-R-C9', title: 'Chapter 9: Graphs & Charts' },
-                    { id: 'EOC-R-C10', title: 'Chapter 10: Paired Passages' }
+                    { id: 'EOC-R-C1', title: 'Chapter 1: Overview of SAT Reading' },{ id: 'EOC-R-C2', title: 'Chapter 2: Vocabulary in Context' },{ id: 'EOC-R-C3', title: 'Chapter 3: Making the Leap' },{ id: 'EOC-R-C4', title: 'Chapter 4: The Big Picture' },{ id: 'EOC-R-C5', title: 'Chapter 5: Literal Comprehension' },{ id: 'EOC-R-C6', title: 'Chapter 6: Reading for Function' },{ id: 'EOC-R-C7', title: 'Chapter 7: Text Completions' },{ id: 'EOC-R-C8', title: 'Chapter 8: Supporting & Undermining' },{ id: 'EOC-R-C9', title: 'Chapter 9: Graphs & Charts' },{ id: 'EOC-R-C10', title: 'Chapter 10: Paired Passages' }
                 ]
             };
 
@@ -255,10 +187,11 @@
 
                 let html = '';
                 chapterList.forEach(chapter => {
+                    // This link now points to quiz.html and passes parameters the new script expects
                     html += `
                         <li>
                             <span class="icon">📖</span>
-                            <a title="${chapter.title}" href="chapter.html?id=${chapter.id}">${chapter.title}</a>
+                            <a title="${chapter.title}" href="quiz.html?quiz_name=${chapter.id}&originPageId=index&source=EOC">${chapter.title}</a>
                         </li>
                     `;
                 });
@@ -274,4 +207,3 @@
     </script>
 </body>
 </html>
-
