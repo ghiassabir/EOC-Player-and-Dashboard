@@ -98,7 +98,7 @@ const moduleMetadata = {
     "SampleMathQuiz": { name: "Sample Math Practice", type: "Math", directions: "Solve these math problems.", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` }
 };
 
-const GITHUB_JSON_BASE_URL = 'https://raw.githubusercontent.com/ghiassabir/Bluebook-UI-UX-with-json-real-data-/main/data/json/';
+const GITHUB_JSON_BASE_URL = 'https://raw.githubusercontent.com/ghiassabir/EOC-Player-and-Dashboard/main/data/';
 
 async function loadQuizData(quizName) {
     let actualJsonFileToLoad = quizName;
