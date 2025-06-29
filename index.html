@@ -168,7 +168,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // This is the full list of chapters from your reference file.
             const chapters = {
                 math: [
                     { id: 'EOC-M-C1', title: 'Chapter 1: Exponents & Radicals' },{ id: 'EOC-M-C2', title: 'Chapter 2: Percent' },{ id: 'EOC-M-C3', title: 'Chapter 3: Exponential & Linear Growth' },{ id: 'EOC-M-C4', title: 'Chapter 4: Rates' },{ id: 'EOC-M-C5', title: 'Chapter 5: Ratio & Proportion' },{ id: 'EOC-M-C6', title: 'Chapter 6: Expressions' },{ id: 'EOC-M-C7', title: 'Chapter 7: Constructing Models' },{ id: 'EOC-M-C8', title: 'Chapter 8: Manipulating & Solving Equations' },{ id: 'EOC-M-C9', title: 'Chapter 9: More Equation Solving Strategies' },{ id: 'EOC-M-C10', title: 'Chapter 10: Systems of Equations' },{ id: 'EOC-M-C11', title: 'Chapter 11: Inequalities' },{ id: 'EOC-M-C12', title: 'Chapter 12: Word Problems' },{ id: 'EOC-M-C13', title: 'Chapter 13: Min & Max Word Problems' },{ id: 'EOC-M-C14', title: 'Chapter 14: Lines' },{ id: 'EOC-M-C15', title: 'Chapter 15: Interpreting Linear Models' },{ id: 'EOC-M-C16', title: 'Chapter 16: Functions' },{ id: 'EOC-M-C17', title: 'Chapter 17: Quadratics' },{ id: 'EOC-M-C18', title: 'Chapter 18: Synthetic Division' },{ id: 'EOC-M-C19', title: 'Chapter 19: Complex Numbers' },{ id: 'EOC-M-C20', title: 'Chapter 20: Absolute Value' },{ id: 'EOC-M-C21', title: 'Chapter 21: Angles' },{ id: 'EOC-M-C22', title: 'Chapter 22: Triangles' },{ id: 'EOC-M-C23', title: 'Chapter 23: Circles' },{ id: 'EOC-M-C24', title: 'Chapter 24: Trigonometry' },{ id: 'EOC-M-C25', title: 'Chapter 25: Reading Data' },{ id: 'EOC-M-C26', title: 'Chapter 26: Probability' },{ id: 'EOC-M-C27', title: 'Chapter 27: Statistics 1' },{ id: 'EOC-M-C28', title: 'Chapter 28: Statistics 2' },{ id: 'EOC-M-C29', title: 'Chapter 29: Volume' }
@@ -188,7 +187,7 @@
 
                 let html = '';
                 chapterList.forEach(chapter => {
-                    // Corrected link to point to chapter.html
+                    // Corrected link now points to chapter.html
                     html += `
                         <li>
                             <span class="icon">📖</span>
