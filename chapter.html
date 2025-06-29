@@ -114,7 +114,7 @@
             
             <div id="action-buttons" class="action-buttons-container" style="display: none;">
                 <a id="start-quiz-btn" class="action-button">Start Quiz</a>
-                <a id="view-results-btn" href="#" class="action-button">View Results</a>
+                <a id="view-results-btn" class="action-button">View Results</a>
             </div>
 
             <div class="back-link-container">
@@ -170,35 +170,39 @@
                 activeQuizId = localStorage.getItem(storageKey);
             }
 
+            // --- Reusable function to check for file existence ---
+            async function checkFileAndNavigate(quizId, destinationUrl, type) {
+                const quizDataUrl = `data/${quizId}.json`;
+                subtitleElement.textContent = `Checking availability for ${type}...`;
+                
+                try {
+                    const response = await fetch(quizDataUrl, { method: 'HEAD' });
+                    if (response.ok) {
+                        window.location.href = destinationUrl;
+                    } else {
+                        alert(`Sorry, the data for "${allChapters[quizId]}" is not yet available. You will be returned to the main hub.`);
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error('Error checking for file:', error);
+                    alert('Could not verify availability due to a network error. Please try again.');
+                    subtitleElement.textContent = 'What would you like to do?';
+                }
+            }
+
             if (activeQuizId && allChapters[activeQuizId]) {
                 chapterTitleElement.textContent = allChapters[activeQuizId];
                 
-                // Set the link for "View Results" immediately
-                viewResultsBtn.href = `dashboard.html?id=${activeQuizId}`;
-
-                // Add the new file check logic to the "Start Quiz" button
-                startQuizBtn.addEventListener('click', async () => {
-                    const quizDataUrl = `data/${activeQuizId}.json`;
-                    subtitleElement.textContent = 'Checking quiz availability...';
-
-                    try {
-                        // Use a HEAD request to check for the file without downloading it
-                        const response = await fetch(quizDataUrl, { method: 'HEAD' });
-
-                        if (response.ok) {
-                            // File exists, proceed to the quiz player
-                            window.location.href = `quiz.html?quiz_name=${activeQuizId}&originPageId=chapter`;
-                        } else {
-                            // File does not exist (404 error)
-                            alert(`Sorry, the quiz for "${allChapters[activeQuizId]}" is not yet available. You will be returned to the main hub.`);
-                            window.location.href = 'index.html';
-                        }
-                    } catch (error) {
-                        // Network error or other fetch-related issue
-                        console.error('Error checking for quiz file:', error);
-                        alert('Could not verify quiz availability due to a network error. Please try again.');
-                        subtitleElement.textContent = 'What would you like to do?';
-                    }
+                // Add event listener for "Start Quiz"
+                startQuizBtn.addEventListener('click', () => {
+                    const destination = `quiz.html?quiz_name=${activeQuizId}&originPageId=chapter`;
+                    checkFileAndNavigate(activeQuizId, destination, 'quiz');
+                });
+                
+                // Add event listener for "View Results"
+                viewResultsBtn.addEventListener('click', () => {
+                    const destination = `dashboard.html?id=${activeQuizId}`;
+                    checkFileAndNavigate(activeQuizId, destination, 'results');
                 });
 
                 actionButtons.style.display = 'flex';
