@@ -50,6 +50,7 @@
             font-size: 1.125rem;
             color: #555555;
             margin-top: 5px;
+            min-height: 1.5rem; /* Reserve space for status message */
         }
         .action-buttons-container {
             text-align: center;
@@ -79,6 +80,7 @@
             transition: background-color 0.2s ease, color 0.2s ease;
             margin: 0 8px 10px 8px;
             min-width: 200px;
+            cursor: pointer;
         }
         .action-button:hover {
             background-color: #356a80;
@@ -108,10 +110,10 @@
 
         <div class="page-header"> 
             <h1 id="chapter-title" class="page-header-title">Loading Chapter...</h1> 
-            <p class="page-header-subtitle">What would you like to do?</p> 
+            <p id="page-subtitle" class="page-header-subtitle">What would you like to do?</p> 
             
             <div id="action-buttons" class="action-buttons-container" style="display: none;">
-                <a id="start-quiz-btn" href="#" class="action-button">Start Quiz</a>
+                <a id="start-quiz-btn" class="action-button">Start Quiz</a>
                 <a id="view-results-btn" href="#" class="action-button">View Results</a>
             </div>
 
@@ -153,49 +155,58 @@
             };
 
             const chapterTitleElement = document.getElementById('chapter-title');
+            const subtitleElement = document.getElementById('page-subtitle');
             const actionButtons = document.getElementById('action-buttons');
             const startQuizBtn = document.getElementById('start-quiz-btn');
             const viewResultsBtn = document.getElementById('view-results-btn');
-            
-            // --- NEW localStorage LOGIC STARTS HERE ---
             
             const urlParams = new URLSearchParams(window.location.search);
             let activeQuizId = urlParams.get('id');
             const storageKey = 'lastEocQuizId';
 
             if (activeQuizId) {
-                // If an ID is present in the URL, it is the source of truth.
-                // Use it and save it to localStorage for future return visits.
-                console.log(`ID found in URL: ${activeQuizId}. Saving to localStorage.`);
                 localStorage.setItem(storageKey, activeQuizId);
             } else {
-                // If no ID is in the URL (like on a return visit),
-                // try to get the last used ID from localStorage.
-                console.log("No ID found in URL. Checking localStorage...");
                 activeQuizId = localStorage.getItem(storageKey);
             }
 
-            // --- NEW localStorage LOGIC ENDS HERE ---
-
-
-            // Now, use the determined activeQuizId to set up the page
             if (activeQuizId && allChapters[activeQuizId]) {
-                // Set the chapter title on the page
                 chapterTitleElement.textContent = allChapters[activeQuizId];
                 
-                // Set the correct links for the buttons. The quiz player expects 'quiz_name'.
-                startQuizBtn.href = `quiz.html?quiz_name=${activeQuizId}&originPageId=chapter`;
-                // The dashboard needs to know which quiz results to look for.
+                // Set the link for "View Results" immediately
                 viewResultsBtn.href = `dashboard.html?id=${activeQuizId}`;
 
-                // Show the buttons
+                // Add the new file check logic to the "Start Quiz" button
+                startQuizBtn.addEventListener('click', async () => {
+                    const quizDataUrl = `data/${activeQuizId}.json`;
+                    subtitleElement.textContent = 'Checking quiz availability...';
+
+                    try {
+                        // Use a HEAD request to check for the file without downloading it
+                        const response = await fetch(quizDataUrl, { method: 'HEAD' });
+
+                        if (response.ok) {
+                            // File exists, proceed to the quiz player
+                            window.location.href = `quiz.html?quiz_name=${activeQuizId}&originPageId=chapter`;
+                        } else {
+                            // File does not exist (404 error)
+                            alert(`Sorry, the quiz for "${allChapters[activeQuizId]}" is not yet available. You will be returned to the main hub.`);
+                            window.location.href = 'index.html';
+                        }
+                    } catch (error) {
+                        // Network error or other fetch-related issue
+                        console.error('Error checking for quiz file:', error);
+                        alert('Could not verify quiz availability due to a network error. Please try again.');
+                        subtitleElement.textContent = 'What would you like to do?';
+                    }
+                });
+
                 actionButtons.style.display = 'flex';
 
             } else {
-                // Handle case where ID is missing from both URL and localStorage
                 chapterTitleElement.textContent = 'Chapter Not Found';
                 chapterTitleElement.style.color = 'red';
-                document.getElementById('page-header-subtitle').textContent = 'Please select a chapter from the main hub page.';
+                subtitleElement.textContent = 'Please select a chapter from the main hub page.';
             }
         });
     </script>
