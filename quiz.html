@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOC Quiz Player - The SAT Hub</title>
+    <style>
+        /* Reusing styles for consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .quiz-wrapper {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2a5266;
+            color: #ffd700;
+        }
+        .top-bar .quiz-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .top-bar .timer {
+            font-weight: 600;
+            background-color: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .question-progress {
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            text-align: center;
+            font-weight: 500;
+            color: #495057;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .question-area {
+            padding: 2rem;
+        }
+        .passage-content {
+            background-color: #f8f9fa;
+            border-left: 4px solid #e0e0e0;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            color: #495057;
+        }
+        .question-stem {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .options-list label {
+            display: block;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options-list label:hover {
+            background-color: #f0f2f5;
+        }
+        .options-list input[type="radio"] {
+            display: none;
+        }
+        .options-list input[type="radio"]:checked + label {
+            background-color: #e0e7ff;
+            border-color: #2a5266;
+            font-weight: bold;
+        }
+        .navigation-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        .nav-btn {
+            background-color: #2a5266;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background-color: #356a80;
+        }
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .hidden { display: none; }
+        .loader { text-align: center; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div id="quiz-wrapper" class="quiz-wrapper hidden">
+        <div class="top-bar">
+            <div id="quiz-title" class="quiz-title">Loading Quiz...</div>
+            <div id="timer" class="timer">00:00</div>
+        </div>
+        <div id="question-progress" class="question-progress"></div>
+        <div class="question-area">
+            <div id="passage-content" class="passage-content hidden"></div>
+            <p id="question-stem" class="question-stem"></p>
+            <ul id="options" class="options-list"></ul>
+        </div>
+        <div class="navigation-footer">
+            <button id="prev-btn" class="nav-btn">Previous</button>
+            <button id="next-btn" class="nav-btn">Next</button>
+            <button id="finish-btn" class="nav-btn hidden">Finish Quiz</button>
+        </div>
+    </div>
+    <div id="loader" class="loader"><p>Loading...</p></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const loader = document.getElementById('loader');
+        const quizWrapper = document.getElementById('quiz-wrapper');
+        
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let studentAnswers = {};
+        let timerInterval;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('id');
+
+        if (!quizId) {
+            loader.innerHTML = '<p style="color:red;">Error: No Quiz ID provided in URL.</p>';
+            return;
+        }
+
+        try {
+            // This assumes your JSON metadata files are in a 'data/' folder relative to your HTML files.
+            // Example: data/EOC-M-C1.json
+            const response = await fetch(`data/${quizId}.json`);
+            if (!response.ok) throw new Error(`Could not load quiz data file: ${quizId}.json. Make sure the file exists and the path is correct.`);
+            questions = await response.json();
+
+            startQuiz();
+        } catch (error) {
+            loader.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        }
+
+        function startQuiz() {
+            loader.style.display = 'none';
+            quizWrapper.classList.remove('hidden');
+            document.getElementById('quiz-title').textContent = quizId;
+            displayQuestion();
+            startTimer();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('question-progress').textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            
+            const passageEl = document.getElementById('passage-content');
+            if (question.passage_content) {
+                passageEl.textContent = question.passage_content;
+                passageEl.classList.remove('hidden');
+            } else {
+                passageEl.classList.add('hidden');
+            }
+            
+            document.getElementById('question-stem').textContent = question.question_stem;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            ['a', 'b', 'c', 'd', 'e'].forEach(opt => {
+                const optionKey = `option_${opt}`;
+                if (question[optionKey]) {
+                    const li = document.createElement('li');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = 'option';
+                    input.id = optionKey;
+                    input.value = question[optionKey];
+
+                    if (studentAnswers[question.question_id] === input.value) {
+                        input.checked = true;
+                    }
+
+                    const label = document.createElement('label');
+                    label.htmlFor = optionKey;
+                    label.textContent = `${opt.toUpperCase()}. ${question[optionKey]}`;
+
+                    li.appendChild(input);
+                    li.appendChild(label);
+                    optionsContainer.appendChild(li);
+                }
+            });
+
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').classList.toggle('hidden', currentQuestionIndex === questions.length - 1);
+            document.getElementById('finish-btn').classList.toggle('hidden', currentQuestionIndex !== questions.length - 1);
+        }
+
+        function saveAnswer() {
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (selectedOption) {
+                studentAnswers[questions[currentQuestionIndex].question_id] = selectedOption.value;
+            }
+        }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            saveAnswer();
+            currentQuestionIndex++;
+            displayQuestion();
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            saveAnswer();
+            currentQuestionIndex--;
+            displayQuestion();
+        });
+
+        document.getElementById('finish-btn').addEventListener('click', () => {
+            saveAnswer();
+            finishQuiz();
+        });
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            const totalTime = document.getElementById('timer').textContent;
+
+            // Prepare results object for the dashboard
+            const results = {
+                quizId: quizId,
+                totalTime: totalTime,
+                submittedAt: new Date().toISOString(),
+                answers: questions.map(q => ({
+                    question_id: q.question_id,
+                    student_answer: studentAnswers[q.question_id] || "Not Answered",
+                }))
+            };
+
+            // Store results in localStorage. This is a simple method for this self-contained system.
+            localStorage.setItem(`eocQuizResult_${quizId}`, JSON.stringify(results));
+
+            // Redirect to the dashboard page for this specific quiz
+            window.location.href = `dashboard.html?id=${quizId}`;
+        }
+        
+        function startTimer() {
+            let seconds = 0;
+            timerInterval = setInterval(() => {
+                seconds++;
+                const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const sec = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `${min}:${sec}`;
+            }, 1000);
+        }
+    });
+    </script>
+</body>
+</html>
