@@ -38,7 +38,7 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+       document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const quizId = urlParams.get('id');
 
@@ -46,9 +46,16 @@
                 // Display the chapter ID as the title
                 document.getElementById('chapter-title').textContent = quizId.replace(/-/g, ' ');
                 
-                // Set the correct links for the buttons, passing the necessary parameters
+                // Set the correct links for the buttons
                 document.getElementById('start-quiz-btn').href = `quiz.html?quiz_name=${quizId}&originPageId=chapter&source=EOC`;
-                document.getElementById('view-results-btn').href = `dashboard.html?id=${quizId}`; // For the future results page
+                
+                // --- THIS IS THE CORRECTED PART ---
+                const resultsBtn = document.getElementById('view-results-btn');
+                resultsBtn.href = `dashboard.html?id=${quizId}`; // Link to the new dashboard
+                resultsBtn.style.opacity = '1';
+                resultsBtn.style.cursor = 'pointer';
+                resultsBtn.title = 'View results for this quiz';
+                // --- END OF CORRECTION ---
 
             } else {
                 document.getElementById('chapter-title').textContent = 'Error: No Chapter Specified';
