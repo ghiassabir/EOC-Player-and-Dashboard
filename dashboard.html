@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOC Quiz Report - The SAT Hub</title>
+    <style>
+        /* Reusing styles for consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .page-container {
+            width: 95%;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 15px 20px 20px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        header {
+            text-align: center;
+            padding: 1rem 0 1.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        #quiz-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2a5266;
+        }
+        #score-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2a5266;
+            margin-top: 0.5rem;
+        }
+        #time-display {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .module {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .module-header {
+            background-color: #2a5266;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 8px; /* Spacing between buttons */
+            padding: 15px;
+        }
+        .question-list a {
+            flex: 0 0 auto;
+            display: inline-block;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 2.5em; /* Ensure consistent width */
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .q-correct {
+            border-color: #198754;
+            color: #198754;
+            background-color: #f0fff4;
+        }
+        .q-incorrect {
+            border-color: #bb2d3b;
+            color: #bb2d3b;
+            background-color: #fff1f2;
+        }
+        #feedback-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 150px;
+            margin-top: 25px;
+        }
+        #feedback-content .status-correct { color: #198754; font-weight: bold; font-size: 1.2rem; }
+        #feedback-content .status-incorrect { color: #bb2d3b; font-weight: bold; font-size: 1.2rem; }
+        #feedback-content .question-text { background-color: #e9ecef; border-left: 4px solid #ced4da; padding: 10px; margin: 15px 0; }
+        #feedback-content pre { background-color: #e9ecef; padding: 10px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; }
+        .back-link-container { text-align: center; margin-top: 2rem; }
+        .back-link { color: #2a5266; text-decoration: none; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+        .loader { text-align: center; font-size: 1.2rem; padding: 2rem; }
+    </style>
+</head>
+<body>
+    <div id="page-container" class="page-container hidden">
+        <header>
+            <h1 id="quiz-title">Quiz Report</h1>
+            <div id="score-display">--/--</div>
+            <div id="time-display">Time: --:--</div>
+        </header>
+        <main>
+            <div id="module-container" class="module">
+                 <div class="module-header">Question Review</div>
+                 <div class="question-list" id="q-list"></div>
+            </div>
+            <section id="feedback-container">
+                <h2>Question Feedback</h2>
+                <div id="feedback-content"><p>Please click on a question number above to see the details.</p></div>
+            </section>
+        </main>
+        <div class="back-link-container">
+             <a href="index.html" class="back-link">← Back to EOC Hub</a>
+        </div>
+    </div>
+    <div id="loader" class="loader"><p>Loading results...</p></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const loader = document.getElementById('loader');
+        const pageContainer = document.getElementById('page-container');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('id');
+
+        if (!quizId) {
+            loader.innerHTML = '<h1>Error: No Quiz ID provided.</h1>';
+            return;
+        }
+
+        // Get results from localStorage, which were saved by quiz.html
+        const resultData = JSON.parse(localStorage.getItem(`eocQuizResult_${quizId}`));
+        if (!resultData) {
+            loader.innerHTML = `<h1>Error: No result data found for quiz "${quizId}".</h1><p>Please complete the quiz first. <a href="quiz.html?id=${quizId}">Start Quiz</a></p>`;
+            return;
+        }
+
+        try {
+            // Fetch the metadata to get all question details (correct answers, explanations, etc.)
+            const response = await fetch(`data/${quizId}.json`);
+            if (!response.ok) throw new Error(`Could not load metadata for ${quizId}.json.`);
+            const metadata = await response.json();
+
+            // --- Process and Render Data ---
+            let correctCount = 0;
+            const masterQuestionData = metadata.map(meta => {
+                const submission = resultData.answers.find(a => a.question_id === meta.question_id);
+                // Determine if the answer is correct by comparing to the metadata
+                const isCorrect = submission ? submission.student_answer === meta.correct_answer : false;
+                
+                if (isCorrect) {
+                    correctCount++;
+                }
+
+                return { ...meta, ...submission, is_correct: isCorrect };
+            });
+
+            // Render header information
+            document.getElementById('quiz-title').textContent = `Report for: ${quizId}`;
+            document.getElementById('score-display').textContent = `Score: ${correctCount} / ${metadata.length}`;
+            document.getElementById('time-display').textContent = `Time Taken: ${resultData.totalTime}`;
+
+            // Render the list of question links
+            const qList = document.getElementById('q-list');
+            masterQuestionData.forEach((q, index) => {
+                const link = document.createElement('a');
+                link.href = '#feedback-container';
+                link.textContent = `Q${index + 1}`;
+                link.className = q.is_correct ? 'q-correct' : 'q-incorrect';
+                
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    displayFeedback(q);
+                });
+                qList.appendChild(link);
+            });
+
+            // Show the first question's feedback by default
+            if (masterQuestionData.length > 0) {
+                displayFeedback(masterQuestionData[0]);
+            }
+
+            // Show the page content
+            loader.style.display = 'none';
+            pageContainer.classList.remove('hidden');
+
+        } catch (error) {
+            loader.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        }
+        
+        function displayFeedback(q) {
+            const feedbackContent = document.getElementById('feedback-content');
+            const statusClass = q.is_correct ? 'status-correct' : 'status-incorrect';
+            
+            let questionDisplay = `<p><b>${q.question_stem || ''}</b></p>`;
+            if (q.passage_content) {
+                questionDisplay = `<p><em>${q.passage_content}</em></p>` + questionDisplay;
+            }
+
+            feedbackContent.innerHTML = `
+                <p><strong class="${statusClass}">${q.is_correct ? 'Correct' : 'Incorrect'}</strong></p>
+                <div class="question-text">${questionDisplay}</div>
+                <p><strong>Your Answer:</strong> ${q.student_answer}</p>
+                <p><strong>Correct Answer:</strong> ${q.correct_answer}</p>
+                <p><strong>Explanation:</strong></p>
+                <pre>${q.explanation_ai_enhanced || q.explanation_original || 'Explanation not available.'}</pre>
+            `;
+            document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+    </script>
+</body>
+</html>
