@@ -2,7 +2,7 @@
   {
     "question_id": "EOC-G-C3-1",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 1,
     "question_type": "multiple_choice",
@@ -24,7 +24,7 @@
   {
     "question_id": "EOC-G-C3-2",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 2,
     "question_type": "multiple_choice",
@@ -46,7 +46,7 @@
   {
     "question_id": "EOC-G-C3-3",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 3,
     "question_type": "multiple_choice",
@@ -68,7 +68,7 @@
   {
     "question_id": "EOC-G-C3-4",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 4,
     "question_type": "multiple_choice",
@@ -90,7 +90,7 @@
   {
     "question_id": "EOC-G-C3-5",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 5,
     "question_type": "multiple_choice",
@@ -112,7 +112,7 @@
   {
     "question_id": "EOC-G-C3-6",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 6,
     "question_type": "multiple_choice",
@@ -134,7 +134,7 @@
   {
     "question_id": "EOC-G-C3-7",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 7,
     "question_type": "multiple_choice",
@@ -156,7 +156,7 @@
   {
     "question_id": "EOC-G-C3-8",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 8,
     "question_type": "multiple_choice",
@@ -178,7 +178,7 @@
   {
     "question_id": "EOC-G-C3-9",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 9,
     "question_type": "multiple_choice",
@@ -195,12 +195,12 @@
     "feedback_c": "\"following\" is a participle, not a main verb. This choice turns the entire sentence into a large fragment.",
     "feedback_d": "Like \"but,\" the conjunction \"and\" is unnecessary and incorrectly placed after an introductory modifying phrase.",
     "passage_content": null,
-    "question_stem": "Usually structured differently from autobiographies, <u>but memoirs follow</u> the development of an author's personality rather than the writing of his or her works."
+    "question_stem": "Usually structured differently from autobiographies, <u>but memoirs follow</u> the development of an author's personality rather than the Grammar of his or her works."
   },
   {
     "question_id": "EOC-G-C3-10",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 10,
     "question_type": "multiple_choice",
@@ -222,7 +222,7 @@
   {
     "question_id": "EOC-G-C3-11",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 11,
     "question_type": "multiple_choice",
@@ -244,7 +244,7 @@
   {
     "question_id": "EOC-G-C3-12",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 12,
     "question_type": "multiple_choice",
@@ -255,18 +255,18 @@
     "option_e": null,
     "correct_answer": "NO CHANGE",
     "explanation_original": null,
-    "explanation_ai_enhanced": "This sentence is correct. The main clause is \"the process of writing fiction is largely unconscious.\" The participial phrase \"emerging from...\" correctly modifies \"process,\" explaining its origin.\n\nWhy B is wrong: This choice creates a comma splice by joining two independent clauses (\"the process...is unconscious\" and \"it emerges from...\") with only a comma.\n\nWhy C is wrong: While not a comma splice, adding \"and\" makes the structure slightly awkward. It attempts to make \"unconscious\" and \"emerging\" parallel adjectives, which isn't the intended meaning. The original participial phrase is clearer and more effective.\n\nWhy D is wrong: Adding \"also\" is redundant and unnecessary. The word \"and\" already implies addition, making \"also\" superfluous and slightly weakening the style.",
-    "feedback_a": "This sentence is correct. The main clause is \"the process of writing fiction is largely unconscious.\" The participial phrase \"emerging from...\" correctly modifies \"process,\" explaining its origin.",
+    "explanation_ai_enhanced": "This sentence is correct. The main clause is \"the process of Grammar fiction is largely unconscious.\" The participial phrase \"emerging from...\" correctly modifies \"process,\" explaining its origin.\n\nWhy B is wrong: This choice creates a comma splice by joining two independent clauses (\"the process...is unconscious\" and \"it emerges from...\") with only a comma.\n\nWhy C is wrong: While not a comma splice, adding \"and\" makes the structure slightly awkward. It attempts to make \"unconscious\" and \"emerging\" parallel adjectives, which isn't the intended meaning. The original participial phrase is clearer and more effective.\n\nWhy D is wrong: Adding \"also\" is redundant and unnecessary. The word \"and\" already implies addition, making \"also\" superfluous and slightly weakening the style.",
+    "feedback_a": "This sentence is correct. The main clause is \"the process of Grammar fiction is largely unconscious.\" The participial phrase \"emerging from...\" correctly modifies \"process,\" explaining its origin.",
     "feedback_b": "This choice creates a comma splice by joining two independent clauses (\"the process...is unconscious\" and \"it emerges from...\") with only a comma.",
     "feedback_c": "While not a comma splice, adding \"and\" makes the structure slightly awkward. It attempts to make \"unconscious\" and \"emerging\" parallel adjectives, which isn't the intended meaning. The original participial phrase is clearer and more effective.",
     "feedback_d": "Adding \"also\" is redundant and unnecessary. The word \"and\" already implies addition, making \"also\" superfluous and slightly weakening the style.",
     "passage_content": null,
-    "question_stem": "According to author Nadine Gordimer, the process of writing fiction is largely unconscious, <u>emerging from what people learn and how they live</u>."
+    "question_stem": "According to author Nadine Gordimer, the process of Grammar fiction is largely unconscious, <u>emerging from what people learn and how they live</u>."
   },
   {
     "question_id": "EOC-G-C3-13",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 13,
     "question_type": "multiple_choice",
@@ -288,7 +288,7 @@
   {
     "question_id": "EOC-G-C3-14",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 14,
     "question_type": "multiple_choice",
@@ -310,7 +310,7 @@
   {
     "question_id": "EOC-G-C3-15",
     "source_file_name": "Erica - Grammar - Chapter 3 - Sentences & Fragments.pdf",
-    "subject": "Writing",
+    "subject": "Grammar",
     "quiz_name": "EOC-G-C3",
     "question_number": 15,
     "question_type": "multiple_choice",
