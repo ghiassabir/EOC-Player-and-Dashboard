@@ -20,6 +20,15 @@
  * @param {string|number} correctAnswerString The correct answer string from the JSON (e.g., "3/2" or "3.5|7/2").
  * @returns {boolean} True if the student's answer is numerically equivalent to any of the correct answers, otherwise false.
  */
+
+/**
+ * Checks if a student's SPR answer is numerically correct, handling different formats
+ * including simple LaTeX fractions.
+ *
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON (e.g., "3/2" or "$\\frac{3}{2}$").
+ * @returns {boolean} True if the student's answer is numerically equivalent, otherwise false.
+ */
 function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
     // 1. Guard against null, undefined, or empty inputs
     if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
@@ -34,12 +43,25 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
     }
 
     /**
-     * A safe, custom function to get the numerical value of a string.
-     * @param {string} str The string to evaluate (e.g., "1.5" or "3/2").
+     * A safe, custom function to get the numerical value of a string that could
+     * be a decimal, a simple fraction, or a LaTeX fraction.
+     * @param {string} str The string to evaluate.
      * @returns {number|null} The numerical value, or null if invalid.
      */
     const getNumericValue = (str) => {
-        // Test for a simple fraction format first
+        // --- NEW: Handle LaTeX fraction format ---
+        // Checks for formats like "$\frac{3}{2}$"
+        const latexMatch = str.match(/\\frac\{(.+?)\}\{(.+?)\}/);
+        if (latexMatch && latexMatch.length === 3) {
+            const numerator = parseFloat(latexMatch[1]);
+            const denominator = parseFloat(latexMatch[2]);
+            if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                return numerator / denominator;
+            }
+        }
+        
+        // --- Fallback for simple fractions ---
+        // Handles "3/2"
         if (str.includes('/')) {
             const parts = str.split('/');
             if (parts.length === 2) {
@@ -50,35 +72,40 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
                 }
             }
         }
-        // If not a fraction, check if it's a valid standalone number
+        
+        // --- Fallback for plain numbers ---
+        // Handles "1.5"
+        // isFinite also correctly handles strings without needing parseFloat first.
         if (isFinite(str)) {
             return parseFloat(str);
         }
-        return null; // Invalid format
+
+        return null; // Return null if no valid format is found
     };
 
     // --- Main Comparison Logic ---
     const studentNumericValue = getNumericValue(studentAnswerTrimmed);
 
     if (studentNumericValue === null) {
-        // Fallback to case-insensitive text match for non-numeric answers.
+        // If the student's answer isn't a number, do a simple text match.
         return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
     }
 
-    // Split the correct answer string by '|' to check each possibility
+    // Split the correct answer string by '|' and check each possibility.
     const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
 
     for (const correctAns of possibleCorrectAnswers) {
         const correctNumericValue = getNumericValue(correctAns);
-        // If both are valid numbers, compare them with a tolerance for floating-point errors.
+
         if (correctNumericValue !== null) {
+            // Compare with a tolerance for floating-point errors.
             if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
                 return true; // Found a numerical match!
             }
         }
     }
-
-    return false; // No numerical match was found.
+    
+    return false;
 }
 
 
