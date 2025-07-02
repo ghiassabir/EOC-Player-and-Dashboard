@@ -20,75 +20,79 @@
  * @param {string|number} correctAnswer The correct answer from the JSON, which could be a string or a number.
  * @returns {boolean} True if the answer is correct, false otherwise.
  */
-function isSprAnswerCorrect(studentAnswer, correctAnswer) {
-    // Guard against null, undefined, or empty inputs
-    if (studentAnswer === null || studentAnswer === undefined || correctAnswer === null || correctAnswer === undefined) {
+// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
+
+/**
+ * Checks if a student's SPR answer is correct.
+ * Handles exact matches, pipe-separated values, equivalent fractions/decimals, and ranges.
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
+function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
+    if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
         return false;
     }
 
-    // Ensure both inputs are treated as strings for consistent processing
-    const studentAnswerString = String(studentAnswer).trim();
-    const correctAnswerString = String(correctAnswer).trim();
+    const studentAnswerTrimmed = String(studentAnswer).trim();
+    const correctAnswerTrimmed = String(correctAnswerString).trim();
 
-    if (studentAnswerString === "" || correctAnswerString === "") {
+    if (studentAnswerTrimmed === "" || correctAnswerTrimmed === "") {
         return false;
     }
 
-    // Get all possible correct answers, separated by pipes
-    const possibleCorrectAnswers = correctAnswerString.split('|').map(s => s.trim());
+    // --- Range Check Logic ---
+    if (correctAnswerTrimmed.toLowerCase().startsWith('range(') && correctAnswerTrimmed.endsWith(')')) {
+        try {
+            const studentValue = parseFloat(studentAnswerTrimmed);
+            if (isNaN(studentValue)) return false;
 
-    // First, try a direct, case-insensitive string comparison. This is for non-numeric answers.
-    const studentAnswerLower = studentAnswerString.toLowerCase();
-    const possibleCorrectAnswersLower = possibleCorrectAnswers.map(s => s.toLowerCase());
-    if (possibleCorrectAnswersLower.includes(studentAnswerLower)) {
-        return true;
-    }
+            const rangeContent = correctAnswerTrimmed.substring(6, correctAnswerTrimmed.length - 1);
+            const [lowerBound, upperBound] = rangeContent.split(',').map(s => parseFloat(s.trim()));
 
-    // Next, try numerical comparison for fractions, decimals, etc.
-    try {
-        let studentValue;
-        // Evaluate student's answer if it's a fraction (e.g., "5/2")
-        if (studentAnswerString.includes('/')) {
-            const parts = studentAnswerString.split('/');
-            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
-                studentValue = parseFloat(parts[0]) / parseFloat(parts[1]);
-            } else {
-                return false; // Invalid fraction format
+            if (!isNaN(lowerBound) && !isNaN(upperBound)) {
+                return studentValue >= lowerBound && studentValue <= upperBound;
             }
-        } else {
-            studentValue = parseFloat(studentAnswerString);
-        }
-
-        // If student's answer can't be converted to a number, stop here.
-        if (isNaN(studentValue)) {
+        } catch (e) {
+            console.error("Error parsing range answer:", e);
             return false;
         }
+    }
 
-        // Now, check if the student's number matches any of the possible correct numbers
-        for (const correctAns of possibleCorrectAnswers) {
-            let correctValue;
-            if (correctAns.includes('/')) {
-                const parts = correctAns.split('/');
-                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
-                    correctValue = parseFloat(parts[0]) / parseFloat(parts[1]);
-                } else {
-                    continue; // Skip invalid correct answer format
-                }
-            } else {
-                correctValue = parseFloat(correctAns);
+    // --- Numerical and Text Comparison Logic ---
+    const possibleCorrectAnswers = correctAnswerTrimmed.split('|').map(s => s.trim());
+
+    // Helper to convert any string (decimal or fraction) to a number
+    const toNumericValue = (str) => {
+        if (str.includes('/')) {
+            const parts = str.split('/');
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
+                return parseFloat(parts[0]) / parseFloat(parts[1]);
             }
+        }
+        return parseFloat(str);
+    };
 
-            // Compare the numerical values with a small tolerance for floating-point inaccuracies
-            if (!isNaN(correctValue) && Math.abs(studentValue - correctValue) < 0.001) {
+    const studentNumericValue = toNumericValue(studentAnswerTrimmed);
+
+    // If the student's answer is not a valid number, we can only do a direct text match.
+    if (isNaN(studentNumericValue)) {
+        return possibleCorrectAnswers.some(ans => ans.toLowerCase() === studentAnswerTrimmed.toLowerCase());
+    }
+
+    // Loop through all possible correct answers and compare their numeric values.
+    for (const correctAns of possibleCorrectAnswers) {
+        const correctNumericValue = toNumericValue(correctAns);
+
+        if (!isNaN(correctNumericValue)) {
+            // Use a small tolerance (epsilon) for comparing floating-point numbers
+            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
                 return true; // Found a numerical match!
             }
         }
-    } catch (e) {
-        console.error("Error during numerical answer evaluation:", e);
-        return false;
     }
 
-    return false; // If no match was found after all checks
+    return false; // No match found
 }
 
 function toggleModal(modalElement, show) {
