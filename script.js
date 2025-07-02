@@ -13,6 +13,13 @@
  * @param {string|number} correctAnswerString The correct answer string from the JSON, which may contain multiple correct answers separated by "|".
  * @returns {boolean} True if the student's answer is numerically equivalent to any of the correct answers, otherwise false.
  */
+/**
+ * Checks if a student's SPR answer is numerically correct, handling different formats.
+ *
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON (e.g., "3/2" or "3.5|7/2").
+ * @returns {boolean} True if the student's answer is numerically equivalent to any of the correct answers, otherwise false.
+ */
 function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
     // 1. Guard against null, undefined, or empty inputs
     if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
@@ -27,10 +34,9 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
     }
 
     /**
-     * A safe, custom function to get the numerical value of a string that could
-     * be a decimal or a simple fraction (e.g., "3/2").
-     * @param {string} str The string to evaluate.
-     * @returns {number|null} The numerical value, or null if it's not a valid number/fraction.
+     * A safe, custom function to get the numerical value of a string.
+     * @param {string} str The string to evaluate (e.g., "1.5" or "3/2").
+     * @returns {number|null} The numerical value, or null if invalid.
      */
     const getNumericValue = (str) => {
         // Test for a simple fraction format first
@@ -39,53 +45,41 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
             if (parts.length === 2) {
                 const numerator = parseFloat(parts[0]);
                 const denominator = parseFloat(parts[1]);
-                // Ensure both parts are numbers and denominator is not zero
                 if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
                     return numerator / denominator;
                 }
             }
         }
-
         // If not a fraction, check if it's a valid standalone number
         if (isFinite(str)) {
             return parseFloat(str);
         }
-
-        // Return null if it's neither a valid fraction nor a number
-        return null;
+        return null; // Invalid format
     };
 
     // --- Main Comparison Logic ---
-
-    // 2. Get the numerical value of the student's answer.
     const studentNumericValue = getNumericValue(studentAnswerTrimmed);
 
-    // If the student's answer isn't a valid number, we can't perform a numerical comparison.
     if (studentNumericValue === null) {
-        // Fallback to a case-insensitive text match for non-numeric answers.
+        // Fallback to case-insensitive text match for non-numeric answers.
         return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
     }
 
-    // 3. Split the correct answer string by '|' and check each possibility.
+    // Split the correct answer string by '|' to check each possibility
     const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
 
     for (const correctAns of possibleCorrectAnswers) {
-        // 4. Get the numerical value of the current correct answer option.
         const correctNumericValue = getNumericValue(correctAns);
-
-        // 5. If both are valid numbers, compare them with a tolerance for floating-point errors.
+        // If both are valid numbers, compare them with a tolerance for floating-point errors.
         if (correctNumericValue !== null) {
-            // Using a small epsilon to handle floating point inaccuracies
             if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
                 return true; // Found a numerical match!
             }
         }
     }
 
-    // 6. If no numerical match was found after checking all possibilities.
-    return false;
+    return false; // No numerical match was found.
 }
-
 
 
 function toggleModal(modalElement, show) {
@@ -1170,34 +1164,19 @@ if(sprInputFieldMain) {
 }
 
 async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = false) {
-    console.log(`DEBUG submitCurrentModuleData: Attempting to submit data for module index: ${moduleIndexToSubmit}. Is final: ${isFinalSubmission}`);
-    
-    // Ensure the time for the very last question is recorded before submission.
+    console.log(`DEBUG submitCurrentModuleData: Submitting data for module index: ${moduleIndexToSubmit}.`);
     if (moduleIndexToSubmit === currentModuleIndex) {
         recordTimeOnCurrentQuestion();
     }
 
     const submissions = [];
     const timestamp = new Date().toISOString();
-    const quizNameForSubmission = (currentTestFlow && currentTestFlow[moduleIndexToSubmit]) ? currentTestFlow[moduleIndexToSubmit] : "UNKNOWN_MODULE_NAME";
+    const quizNameForSubmission = currentTestFlow[moduleIndexToSubmit];
 
-    if (!quizNameForSubmission || quizNameForSubmission === "UNKNOWN_MODULE_NAME") {
-        console.error(`DEBUG submitCurrentModuleData: Could not determine quizName for module index ${moduleIndexToSubmit}. Aborting submission for this module.`);
-        return false;
-    }
+    // This assumes `currentQuizQuestions` holds the questions for the module being submitted.
+    // This is safe if submission happens immediately after a module.
+    const questionsForModule = currentQuizQuestions;
 
-    console.log(`DEBUG submitCurrentModuleData: Submitting for quizName: ${quizNameForSubmission}`);
-
-    // We need the original questions for this module to get the definitive correct answer string.
-    // This requires reloading the data if it's not the current module's data.
-    let questionsForModule = currentQuizQuestions;
-    if (moduleIndexToSubmit !== currentModuleIndex) {
-        // In a more complex app, you might need to fetch this data again.
-        // For now, we assume this function is called before the questions are unloaded.
-        // If you navigate far away and then submit, this could be a point of failure.
-        console.warn("Submitting for a non-current module. This assumes question data is still available.");
-    }
-    
     for (const key in userAnswers) {
         if (userAnswers.hasOwnProperty(key)) {
             const keyModuleIndex = parseInt(key.split('-')[0]);
@@ -1208,7 +1187,7 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                 const originalQuestionData = questionsForModule[questionNumber - 1];
 
                 if (!originalQuestionData) {
-                    console.warn(`DEBUG submitCurrentModuleData: Could not find original question data for key ${key}. Skipping.`);
+                    console.warn(`DEBUG submit: Cannot find original question data for key ${key}. Skipping.`);
                     continue;
                 }
                 
@@ -1217,17 +1196,20 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
 
                 if (answerState.question_type_from_json === 'student_produced_response') {
                     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
-                    // **THE FIX**: Always use the definitive correct answer string from the original question data.
+                    // **THE FIX**: Pass the student's input and the original correct answer from the JSON.
                     isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, originalQuestionData.correct_answer);
                 } else { // For multiple_choice
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
-                    if (originalQuestionData.correct_answer && studentAnswerForSubmission !== "NO_ANSWER") {
-                        // Standard string comparison is fine for MCQ
-                        isCorrect = (String(studentAnswerForSubmission).trim().toLowerCase() === String(originalQuestionData.correct_answer).trim().toLowerCase());
-                    }
+                    isCorrect = (String(studentAnswerForSubmission).trim().toLowerCase() === String(originalQuestionData.correct_answer).trim().toLowerCase());
                 }
                 
-                console.log(`GRADING: Q#${questionNumber} | Type: ${answerState.question_type_from_json} | Student: '${studentAnswerForSubmission}' | Correct: '${originalQuestionData.correct_answer}' | Result: ${isCorrect}`);
+                // VITAL DEBUGGING STEP: Check your browser's console for this output.
+                console.log(
+                    `GRADING CHECK ==> Q_ID: ${originalQuestionData.question_id} | ` +
+                    `Student Answer: "${studentAnswerForSubmission}" | ` +
+                    `Correct Answer String: "${originalQuestionData.correct_answer}" | ` +
+                    `==> Marked as: ${isCorrect ? 'CORRECT' : 'INCORRECT'}`
+                );
 
                 submissions.push({
                     timestamp: timestamp,
@@ -1245,40 +1227,34 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
     }
 
     if (submissions.length === 0) {
-        console.log(`DEBUG submitCurrentModuleData: No answers recorded for module ${quizNameForSubmission}. Nothing to submit.`);
         return true;
     }
 
+    // ... rest of the fetch logic remains the same ...
     console.log(`DEBUG submitCurrentModuleData: Submitting payload for module ${quizNameForSubmission}:`, submissions);
-    
     if (APPS_SCRIPT_WEB_APP_URL === 'YOUR_CORRECT_BLUEBOOK_APPS_SCRIPT_URL_HERE' || !APPS_SCRIPT_WEB_APP_URL.startsWith('https://script.google.com/')) {
-        console.warn("APPS_SCRIPT_WEB_APP_URL not set or invalid. Submission will be logged to console only for module " + quizNameForSubmission);
+        console.warn("APPS_SCRIPT_WEB_APP_URL not set or invalid. Submission will not proceed for module " + quizNameForSubmission);
         alert("Submission URL not configured. Data for module " + quizNameForSubmission + " logged to console.");
         return false;
     }
-
     try {
         fetch(APPS_SCRIPT_WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors', 
-            cache: 'no-cache',
+            method: 'POST', mode: 'no-cors', cache: 'no-cache',
             headers: {'Content-Type': 'text/plain'},
-            redirect: 'follow',
-            body: JSON.stringify(submissions)
+            redirect: 'follow', body: JSON.stringify(submissions)
         })
         .then(() => {
-            console.log(`DEBUG submitCurrentModuleData: Submission fetch request initiated for module ${quizNameForSubmission} (no-cors mode).`);
+            console.log(`DEBUG submitCurrentModuleData: Submission attempt finished for module ${quizNameForSubmission} (no-cors mode).`);
         })
         .catch((error) => {
-            console.error(`DEBUG submitCurrentModuleData: Fetch error submitting data for module ${quizNameForSubmission}:`, error);
+            console.error(`DEBUG submitCurrentModuleData: Error submitting data for module ${quizNameForSubmission}:`, error);
         });
         return true;
     } catch (error) {
-        console.error('DEBUG submitCurrentModuleData: Synchronous error during fetch setup for ' + quizNameForSubmission + ':', error);
+        console.error('DEBUG submitCurrentModuleData: Synchronous error setting up fetch for module ' + quizNameForSubmission + ':', error);
         return false;
     }
 }
-
 
 /*
 async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = false) {
