@@ -1,155 +1,53 @@
 // --- script.js (Complete, Consolidated, and Corrected for Session Persistence - Part 1 of 6) ---
 
 // --- Utility Functions (Define these FIRST) ---
-
-// --- ADD THIS NEW HELPER FUNCTION ---
-/**
- * Checks if a student's SPR answer is numerically equivalent to any of the possible correct answers.
- * Handles fractions, decimals, and whole numbers.
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string} correctAnswerString The string from the JSON, which may contain multiple answers separated by '|'.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-
-    // --- ADD THIS NEW HELPER FUNCTION (or REPLACE the old one) ---
-
-/**
- * Checks if a student's SPR answer is numerically equivalent to any of the possible correct answers.
- * This version is more robust and handles different data types and formats.
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswer The correct answer from the JSON, which could be a string or a number.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct.
- * Handles exact matches, pipe-separated values, equivalent fractions/decimals, and ranges.
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct.
- * This version uses a safe, custom evaluation function to correctly compare
- * numerically equivalent answers like "1.5" and "3/2".
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct.
- * This version uses a safe, custom evaluation function to correctly compare
- * numerically equivalent answers like "1.5" and "3/2".
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct.
- * This version uses a safe, custom evaluation function to correctly compare
- * numerically equivalent answers like "1.5" and "3/2".
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, eval()-BASED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct using eval() for prototyping.
- * This correctly compares numerically equivalent answers like "1.5" and "3/2".
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
-
-/**
- * Checks if a student's SPR answer is correct.
- * This version uses a safe, custom evaluation function to correctly compare
- * numerically equivalent answers like "1.5" and "3/2".
- * @param {string} studentAnswer The answer provided by the student.
- * @param {string|number} correctAnswerString The correct answer string from the JSON.
- * @returns {boolean} True if the answer is correct, false otherwise.
- */
-function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
-    // 1. Guard against null, undefined, or empty inputs
-    if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
-        return false;
+function toggleModal(modalElement, show) {
+    if (!modalElement) {
+        return;
     }
+    modalElement.classList.toggle('visible', show);
+}
 
-    const studentAnswerTrimmed = String(studentAnswer).trim();
-    const correctAnswerRaw = String(correctAnswerString).trim();
-
-    if (studentAnswerTrimmed === "" || correctAnswerRaw === "") {
-        return false;
+// Function to save the current session state to localStorage
+function saveSessionState() {
+    if (typeof localStorage === 'undefined') {
+        console.warn("localStorage is not available. Session persistence disabled.");
+        return;
     }
-
-    /**
-     * A safe, custom function to get the numerical value of a string.
-     * It handles decimals and simple fractions (e.g., "3/2").
-     * @param {string} str The string to evaluate.
-     * @returns {number|null} The numerical value, or null if it's not a valid number/fraction.
-     */
-    const getNumericValue = (str) => {
-        // If the string is a valid number already, just parse it.
-        // isFinite also handles cases like "1.5"
-        if (isFinite(str)) {
-            return parseFloat(str);
-        }
-        
-        // If it's a fraction, calculate its value.
-        if (str.includes('/')) {
-            const parts = str.split('/');
-            if (parts.length === 2) {
-                const numerator = parseFloat(parts[0]);
-                const denominator = parseFloat(parts[1]);
-                // Ensure both parts are numbers and denominator is not zero
-                if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
-                    return numerator / denominator;
-                }
-            }
-        }
-        
-        // Return null if it's not a valid number or fraction
-        return null;
+    const sessionState = {
+        studentEmailForSubmission: studentEmailForSubmission,
+        currentInteractionMode: currentInteractionMode,
+        currentTestFlow: currentTestFlow,
+        currentModuleIndex: currentModuleIndex,
+        currentQuestionNumber: currentQuestionNumber,
+        userAnswers: userAnswers,
+        currentModuleTimeLeft: currentModuleTimeLeft,
+        practiceQuizTimeElapsed: practiceQuizTimeElapsed,
+        isTimerHidden: isTimerHidden,
+        globalOriginPageId: globalOriginPageId,
+        globalQuizSource: globalQuizSource,
     };
-
-    // --- Main Comparison Logic ---
-
-    // 2. Get the numerical value of the student's answer.
-    const studentNumericValue = getNumericValue(studentAnswerTrimmed);
-
-    // If the student's answer isn't a number, we can't do a numerical comparison.
-    // We'll just do a simple text match as a fallback for non-numeric answers.
-    if (studentNumericValue === null) {
-        return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
+    try {
+        const serializedState = JSON.stringify(sessionState);
+        localStorage.setItem(SESSION_STORAGE_KEY, serializedState);
+        console.log("DEBUG saveSessionState: Session state saved.");
+    } catch (error) {
+        console.error("Error saving session state to localStorage:", error);
     }
+}
 
-    // 3. Split the correct answer string by '|' and check each possibility.
-    const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
-
-    for (const correctAns of possibleCorrectAnswers) {
-        // 4. Get the numerical value of the current correct answer option.
-        const correctNumericValue = getNumericValue(correctAns);
-
-        // 5. If both are valid numbers, compare them with a tolerance for floating-point errors.
-        if (correctNumericValue !== null) {
-            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
-                return true; // Found a numerical match!
-            }
-        }
+// Function to clear the saved session state from localStorage
+function clearSessionState() {
+    if (typeof localStorage === 'undefined') {
+        console.warn("localStorage is not available. Cannot clear session state.");
+        return;
     }
-
-    // 6. If no numerical match was found.
-    return false;
+    try {
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        console.log("DEBUG clearSessionState: Session state cleared from localStorage.");
+    } catch (error) {
+        console.error("Error clearing session state from localStorage:", error);
+    }
 }
 
 
@@ -196,10 +94,8 @@ const moduleMetadata = {
     "EOC-G-C1": { name: "End of Chapter Quiz - Grammar - Chapter 1", type: "Gramamr", directions: "Answer each question based on the provided text or information.", spr_directions: null, spr_examples_table: null },
     "EOC-G-C3": { name: "End of Chapter Quiz - Grammar - Chapter 3", type: "Gramamr", directions: "Answer each question based on the provided text or information.", spr_directions: null, spr_examples_table: null },
     "EOC-M-C1": { name: "End of Chapter Quiz - Math - Chapter 1", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` }, 
-    "EOC-M-C6": { name: "End of Chapter Quiz - Math - Chapter 6", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` },    
     "EOC-M-C8": { name: "End of Chapter Quiz - Math - Chapter 8", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` }, 
-    "EOC-M-C9": { name: "End of Chapter Quiz - Math - Chapter 9", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` },
-    "EOC-M-C10": { name: "End of Chapter Quiz - Math - Chapter 10", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` },
+       "EOC-M-C6": { name: "End of Chapter Quiz - Math - Chapter 6", type: "Math", directions: "Solve each problem and choose the correct answer, or enter your answer in the grid provided.", spr_directions: `<h3>Student-produced response directions</h3><ul><li>If you find <strong>more than one correct answer</strong>, enter only one answer.</li><li>You can enter up to 5 characters for a <strong>positive</strong> answer and up to 6 characters (including the negative sign) for a <strong>negative</strong> answer.</li><li>If your answer is a <strong>fraction</strong> that doesn’t fit in the provided space, enter the decimal equivalent.</li><li>If your answer is a <strong>decimal</strong> that doesn’t fit in the provided space, enter it by truncating or rounding at the fourth digit.</li><li>If your answer is a <strong>mixed number</strong> (such as 3 <span style=\"font-size: 0.7em; vertical-align: super;\">1</span>/<span style=\"font-size: 0.7em; vertical-align: sub;\">2</span>), enter it as an improper fraction (7/2) or its decimal equivalent (3.5).</li><li>Don’t enter <strong>symbols</strong> such as a percent sign, comma, or dollar sign.</li></ul>`, spr_examples_table: `<table class=\"spr-examples-table\"><thead><tr><th>Answer</th><th>Acceptable ways to enter answer</th><th>Unacceptable: will NOT receive credit</th></tr></thead><tbody><tr><td>3.5</td><td>3.5<br/>7/2</td><td>3 1/2</td></tr><tr><td>2/3</td><td>2/3<br/>.666<br/>.667</td><td>0.66<br/>0.67</td></tr><tr><td>-15</td><td>-15</td><td></td></tr></tbody></table>` },
     "CBT-T4-RW-M1": { name: "CBT Test 4: R&W Module 1", type: "RW", durationSeconds: 1920, directions: "Directions for CBT-T4 R&W M1..." },
     "CBT-T4-RW-M2": { name: "CBT Test 4: R&W Module 2", type: "RW", durationSeconds: 1920, directions: "Directions for CBT-T4 R&W M2..." },
     "CBT-T4-MT-M1": { name: "CBT Test 4: Math Module 1", type: "Math", durationSeconds: 2100, directions: "Directions for CBT-T4 Math M1...", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` },
@@ -1210,8 +1106,6 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                 }
                 let studentAnswerForSubmission = "";
                 let isCorrect = false;
-                
-                /*
                 if (answerState.question_type_from_json === 'student_produced_response') {
                     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
@@ -1220,13 +1114,7 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                             isCorrect = true;
                         }
                     }
-                } 
-                */
-            if (answerState.question_type_from_json === 'student_produced_response') {
-    studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
-    // Call the new, robust helper function for intelligent checking
-    isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, answerState.correct_ans);
-} else {
+                } else {
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
                         isCorrect = (String(studentAnswerForSubmission).trim().toLowerCase() === String(answerState.correct_ans).trim().toLowerCase());
