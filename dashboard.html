@@ -4,18 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EOC Quiz Report - The SAT Hub</title>
+
+    <!-- ADDED FOR MATHJAX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
-        /* Reusing the same styling as our previous diagnostic report for consistency */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 20px auto; padding: 0 15px; }
-        header { background-color: #f0f2f5; border: 1px solid #e0e0e0; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; text-align: center; }
-        #score-display { font-size: 1.5rem; font-weight: bold; color: #2a5266; }
-        .module { border: 1px solid #ccc; border-radius: 8px; padding: 0; overflow: hidden; margin-top: 1.5rem;}
-        .module-header { background-color: #2a5266; color: white; padding: 12px 15px; font-size: 1.2em; font-weight: bold; }
-        .question-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 15px; }
-        .question-list a { flex: 0 0 auto; display: inline-block; padding: 5px 10px; text-decoration: none; border: 1px solid #ccc; border-radius: 4px; min-width: 2.5em; text-align: center; font-weight: bold; transition: background-color 0.2s; }
-        .q-correct { border-color: #198754; color: #198754; background-color: #f0fff4; }
-        .q-incorrect { border-color: #bb2d3b; color: #bb2d3b; background-color: #fff1f2; }
-        #feedback-container { background-color: #f8f9fa; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; min-height: 150px; margin-top: 25px; }
+        /* Reusing styles for consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .page-container {
+            width: 95%;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 15px 20px 20px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        header {
+            text-align: center;
+            padding: 1rem 0 1.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        #quiz-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2a5266;
+        }
+        #score-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2a5266;
+            margin-top: 0.5rem;
+        }
+        #time-display {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .module {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .module-header {
+            background-color: #2a5266;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .question-list {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 8px; /* Spacing between buttons */
+            padding: 15px;
+        }
+        .question-list a {
+            flex: 0 0 auto;
+            display: inline-block;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 2.5em; /* Ensure consistent width */
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .q-correct {
+            border-color: #198754;
+            color: #198754;
+            background-color: #f0fff4;
+        }
+        .q-incorrect {
+            border-color: #bb2d3b;
+            color: #bb2d3b;
+            background-color: #fff1f2;
+        }
+        #feedback-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 150px;
+            margin-top: 25px;
+        }
         #feedback-content .status-correct { color: #198754; font-weight: bold; }
         #feedback-content .status-incorrect { color: #bb2d3b; font-weight: bold; }
         #feedback-content .question-text { background-color: #e9ecef; border-left: 4px solid #ced4da; padding: 10px; margin: 15px 0; }
@@ -27,10 +110,11 @@
     </style>
 </head>
 <body>
-    <div id="page-container" class="page-container" style="display: none;">
+    <div id="page-container" class="page-container hidden">
         <header>
             <h1 id="quiz-title">Quiz Report</h1>
             <div id="score-display">--/--</div>
+            <div id="time-display">Time: --:--</div>
         </header>
         <main>
             <div id="module-container" class="module">
@@ -39,11 +123,11 @@
             </div>
             <section id="feedback-container">
                 <h2>Question Feedback</h2>
-                <div id="feedback-content"><p>Click a question number to see details.</p></div>
+                <div id="feedback-content"><p>Please click on a question number above to see the details.</p></div>
             </section>
         </main>
         <div class="back-link-container">
-             <a id="back-link" href="index.html" class="back-link">← Back to EOC Hub</a>
+             <a href="index.html" class="back-link">← Back to EOC Hub</a>
         </div>
     </div>
     <div id="loader" class="loader"><p>Loading results...</p></div>
@@ -52,96 +136,38 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const loader = document.getElementById('loader');
         const pageContainer = document.getElementById('page-container');
-        
-        // --- CONFIGURATION ---
-        // This must point to your master submissions file
-        const SUBMISSIONS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSxW6lYLIfH1r9954znKNbcE90y5qit38yhhyhZnTv_pMCM46H6DdFzQ5ekkJbqtAwfwVBbNegOVzmU/pub?gid=0&single=true&output=csv';
-        // This must point to the folder containing your EOC JSON files
-        const METADATA_BASE_URL = 'https://raw.githubusercontent.com/ghiassabir/EOC-Player-and-Dashboard/main/data/';
-        const STUDENT_EMAIL_KEY = 'bluebookStudentEmail';
 
-        // --- Get identifiers from URL and localStorage ---
         const urlParams = new URLSearchParams(window.location.search);
         const quizId = urlParams.get('id');
-        const studentEmail = localStorage.getItem(STUDENT_EMAIL_KEY);
 
-        if (!quizId || !studentEmail) {
-            loader.innerHTML = `<h1>Error: Missing Information</h1><p>Could not find a Quiz ID in the URL or a student email in storage. Please start from the main hub.</p>`;
+        if (!quizId) {
+            loader.innerHTML = '<h1>Error: No Quiz ID provided.</h1>';
             return;
         }
-        
-        // Set the "Back" link to point to the correct chapter page
-        document.getElementById('back-link').href = `chapter.html?id=${quizId}`;
 
-        // --- HELPER: ROBUST CSV PARSER ---
-        function parseCSV(text) {
-            // ... (The robust parseCSV function goes here) ...
-            let lines = text.trim().split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            const result = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i]) continue;
-                const obj = {}; let values = []; let current_value = ''; let in_quotes = false;
-                for (const char of lines[i]) {
-                    if (char === '"' && in_quotes) in_quotes = false;
-                    else if (char === '"' && !in_quotes) in_quotes = true;
-                    else if (char === ',' && !in_quotes) { values.push(current_value.trim()); current_value = ''; }
-                    else { current_value += char; }
-                }
-                values.push(current_value.trim());
-                for (let j = 0; j < headers.length; j++) {
-                    let value = values[j] || '';
-                    if (value.startsWith('"') && value.endsWith('"')) value = value.substring(1, value.length - 1);
-                    obj[headers[j]] = value;
-                }
-                result.push(obj);
-            }
-            return result;
+        const resultData = JSON.parse(localStorage.getItem(`eocQuizResult_${quizId}`));
+        if (!resultData) {
+             loader.innerHTML = `<h1>Error: No result data found for quiz "${quizId}".</h1><p>Please complete the quiz first. <a href="quiz.html?id=${quizId}">Start Quiz</a></p>`;
+            return;
         }
 
         try {
-            // --- Fetch both data files at the same time ---
-            const [submissionsRes, metadataRes] = await Promise.all([
-                fetch(SUBMISSIONS_CSV_URL),
-                fetch(`${METADATA_BASE_URL}${quizId}.json`)
-            ]);
+            const response = await fetch(`data/${quizId}.json`);
+            if (!response.ok) throw new Error(`Could not load metadata for ${quizId}.json.`);
+            const metadata = await response.json();
 
-            if (!submissionsRes.ok) throw new Error(`Could not load submission data. Please check the URL.`);
-            if (!metadataRes.ok) throw new Error(`Could not load metadata for ${quizId}.json. Please check that the file exists.`);
-
-            const submissionsText = await submissionsRes.text();
-            const metadata = await metadataRes.json();
-            
-            // --- Process and Filter Data ---
-            const allSubmissions = parseCSV(submissionsText);
-            const studentQuizSubmissions = allSubmissions.filter(row => 
-                row.student_gmail_id === studentEmail && row.quiz_name === quizId
-            );
-
-            // De-duplicate to keep only the latest submission for each question
-            const latestSubmissionsMap = new Map();
-            studentQuizSubmissions.forEach(sub => {
-                latestSubmissionsMap.set(sub.question_id, sub);
-            });
-
-            if (latestSubmissionsMap.size === 0) {
-                 loader.innerHTML = `<h1>No Results Found</h1><p>We couldn't find any submissions for quiz "${quizId}" for your email.</p>`;
-                 return;
-            }
-
-            // --- Merge data and calculate score ---
             let correctCount = 0;
             const masterQuestionData = metadata.map(meta => {
-                const submission = latestSubmissionsMap.get(meta.question_id);
-                const isCorrect = submission ? submission.is_correct === 'TRUE' : false;
+                const submission = resultData.answers.find(a => a.question_id === meta.question_id);
+                const isCorrect = submission ? submission.student_answer === meta.correct_answer : false;
                 if (isCorrect) correctCount++;
                 return { ...meta, ...submission, is_correct: isCorrect };
             });
 
-            // --- Render the page ---
             document.getElementById('quiz-title').textContent = `Report for: ${quizId}`;
             document.getElementById('score-display').textContent = `Score: ${correctCount} / ${metadata.length}`;
-            
+            document.getElementById('time-display').textContent = `Time Taken: ${resultData.totalTime}`;
+
             const qList = document.getElementById('q-list');
             masterQuestionData.forEach((q, index) => {
                 const link = document.createElement('a');
@@ -155,10 +181,12 @@
                 qList.appendChild(link);
             });
 
-            if (masterQuestionData.length > 0) displayFeedback(masterQuestionData[0]);
+            if (masterQuestionData.length > 0) {
+                displayFeedback(masterQuestionData[0]);
+            }
 
             loader.style.display = 'none';
-            pageContainer.style.display = 'block';
+            pageContainer.classList.remove('hidden');
 
         } catch (error) {
             loader.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
@@ -168,7 +196,7 @@
             const feedbackContent = document.getElementById('feedback-content');
             const statusClass = q.is_correct ? 'status-correct' : 'status-incorrect';
             
-            let questionDisplay = `<p><b>${q.question_stem || 'Question text not available.'}</b></p>`;
+            let questionDisplay = `<p><b>${q.question_stem || ''}</b></p>`;
             if (q.passage_content) {
                 questionDisplay = `<p><em>${q.passage_content}</em></p>` + questionDisplay;
             }
@@ -176,11 +204,18 @@
             feedbackContent.innerHTML = `
                 <p><strong class="${statusClass}">${q.is_correct ? 'Correct' : 'Incorrect'}</strong></p>
                 <div class="question-text">${questionDisplay}</div>
-                <p><strong>Your Answer:</strong> ${q.student_answer || "Not Answered"}</p>
+                <p><strong>Your Answer:</strong> ${q.student_answer}</p>
                 <p><strong>Correct Answer:</strong> ${q.correct_answer}</p>
                 <p><strong>Explanation:</strong></p>
                 <pre>${q.explanation_ai_enhanced || q.explanation_original || 'Not available.'}</pre>
             `;
+
+            // ** ADDED FOR MATHJAX **
+            // This tells MathJax to look for and render any math in the new content.
+            if (window.MathJax) {
+                window.MathJax.typesetPromise([feedbackContent]);
+            }
+
             document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
         }
     });
