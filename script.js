@@ -29,71 +29,96 @@
  * @param {string|number} correctAnswerString The correct answer string from the JSON.
  * @returns {boolean} True if the answer is correct, false otherwise.
  */
+// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
+
+/**
+ * Checks if a student's SPR answer is correct.
+ * This version uses a safe, custom evaluation function to correctly compare
+ * numerically equivalent answers like "1.5" and "3/2".
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
+// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
+
+/**
+ * Checks if a student's SPR answer is correct.
+ * This version uses a safe, custom evaluation function to correctly compare
+ * numerically equivalent answers like "1.5" and "3/2".
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
 function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
+    // Guard against null, undefined, or empty inputs
     if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
         return false;
     }
 
     const studentAnswerTrimmed = String(studentAnswer).trim();
-    const correctAnswerTrimmed = String(correctAnswerString).trim();
+    const correctAnswerRaw = String(correctAnswerString).trim();
 
-    if (studentAnswerTrimmed === "" || correctAnswerTrimmed === "") {
+    if (studentAnswerTrimmed === "" || correctAnswerRaw === "") {
         return false;
     }
 
-    // --- Range Check Logic ---
-    if (correctAnswerTrimmed.toLowerCase().startsWith('range(') && correctAnswerTrimmed.endsWith(')')) {
+    /**
+     * A safe, custom function to evaluate a string as a number.
+     * It only handles numbers, decimals, and simple fractions (e.g., "3/2").
+     * It rejects any other characters to prevent security risks.
+     * @param {string} str The string to evaluate.
+     * @returns {number|NaN} The numerical value or NaN if invalid.
+     */
+    const safeEvaluate = (str) => {
+        // Allow only numbers, one decimal point, one fraction slash, and an optional leading negative sign.
+        if (/^-?(\d+(\.\d*)?|\.\d+)(\/\d+(\.\d*)?|\/\.\d+)?$/.test(str) === false) {
+             return NaN;
+        }
+        
         try {
-            const studentValue = parseFloat(studentAnswerTrimmed);
-            if (isNaN(studentValue)) return false;
-
-            const rangeContent = correctAnswerTrimmed.substring(6, correctAnswerTrimmed.length - 1);
-            const [lowerBound, upperBound] = rangeContent.split(',').map(s => parseFloat(s.trim()));
-
-            if (!isNaN(lowerBound) && !isNaN(upperBound)) {
-                return studentValue >= lowerBound && studentValue <= upperBound;
+            if (str.includes('/')) {
+                const parts = str.split('/');
+                if (parts.length === 2) {
+                    const numerator = parseFloat(parts[0]);
+                    const denominator = parseFloat(parts[1]);
+                    if (denominator === 0) return NaN; // Cannot divide by zero
+                    return numerator / denominator;
+                }
             }
+            return parseFloat(str);
         } catch (e) {
-            console.error("Error parsing range answer:", e);
-            return false;
+            return NaN;
         }
-    }
-
-    // --- Numerical and Text Comparison Logic ---
-    const possibleCorrectAnswers = correctAnswerTrimmed.split('|').map(s => s.trim());
-
-    // Helper to convert any string (decimal or fraction) to a number
-    const toNumericValue = (str) => {
-        if (str.includes('/')) {
-            const parts = str.split('/');
-            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
-                return parseFloat(parts[0]) / parseFloat(parts[1]);
-            }
-        }
-        return parseFloat(str);
     };
 
-    const studentNumericValue = toNumericValue(studentAnswerTrimmed);
+    // --- Main Comparison Logic ---
 
-    // If the student's answer is not a valid number, we can only do a direct text match.
+    // 1. Evaluate the student's answer to a number.
+    const studentNumericValue = safeEvaluate(studentAnswerTrimmed);
+
+    // If the student's answer isn't a valid number, we can't compare it numerically.
     if (isNaN(studentNumericValue)) {
-        return possibleCorrectAnswers.some(ans => ans.toLowerCase() === studentAnswerTrimmed.toLowerCase());
+        // Fallback to a simple case-insensitive text match for non-numeric answers.
+        return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
     }
 
-    // Loop through all possible correct answers and compare their numeric values.
-    for (const correctAns of possibleCorrectAnswers) {
-        const correctNumericValue = toNumericValue(correctAns);
+    // 2. Split the correct answer string by '|' and check each possibility.
+    const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
 
-        if (!isNaN(correctNumericValue)) {
-            // Use a small tolerance (epsilon) for comparing floating-point numbers
-            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
-                return true; // Found a numerical match!
-            }
+    for (const correctAns of possibleCorrectAnswers) {
+        // 3. Evaluate each possible correct answer to a number.
+        const correctNumericValue = safeEvaluate(correctAns);
+
+        // 4. Compare the two numbers with a tolerance for floating-point errors.
+        if (!isNaN(correctNumericValue) && Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
+            return true; // Found a match!
         }
     }
 
-    return false; // No match found
+    // 5. If no numerical match was found after checking all possibilities.
+    return false;
 }
+
 
 function toggleModal(modalElement, show) {
     if (!modalElement) {
