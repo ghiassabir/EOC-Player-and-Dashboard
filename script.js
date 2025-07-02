@@ -1210,14 +1210,10 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                     }
                 } 
                 */
-             if (answerState.question_type_from_json === 'student_produced_response') {
+            if (answerState.question_type_from_json === 'student_produced_response') {
     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
-    if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
-        const correctSprAnswers = String(answerState.correct_ans).split('|').map(s => s.trim().toLowerCase());
-        if (correctSprAnswers.includes(studentAnswerForSubmission.trim().toLowerCase())) {
-            isCorrect = true;
-        }
-    }
+    // Call the new, robust helper function for intelligent checking
+    isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, answerState.correct_ans);
 } else {
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
