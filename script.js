@@ -69,7 +69,18 @@
  * @param {string|number} correctAnswerString The correct answer string from the JSON.
  * @returns {boolean} True if the answer is correct, false otherwise.
  */
+// --- REPLACE THE OLD isSprAnswerCorrect FUNCTION WITH THIS NEW, CORRECTED VERSION ---
+
+/**
+ * Checks if a student's SPR answer is correct.
+ * This version uses a safe, custom evaluation function to correctly compare
+ * numerically equivalent answers like "1.5" and "3/2".
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
 function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
+    // 1. Guard against null, undefined, or empty inputs
     if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
         return false;
     }
@@ -81,85 +92,64 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
         return false;
     }
 
-    try {
-        // Evaluate the student's answer to get its numerical value.
-        // We use a regex to ensure it's a safe, simple mathematical expression.
-        if (!/^[0-9./\s-]+$/.test(studentAnswerTrimmed)) {
-             // If it contains anything other than numbers, dots, slashes, or a minus sign, it's not a simple number.
-             // Fallback to simple text comparison for non-numeric answers.
-             return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
+    /**
+     * A safe, custom function to get the numerical value of a string.
+     * It handles decimals and simple fractions (e.g., "3/2").
+     * @param {string} str The string to evaluate.
+     * @returns {number|null} The numerical value, or null if it's not a valid number/fraction.
+     */
+    const getNumericValue = (str) => {
+        // If the string is a valid number already, just parse it.
+        // isFinite also handles cases like "1.5"
+        if (isFinite(str)) {
+            return parseFloat(str);
         }
-        const studentNumericValue = eval(studentAnswerTrimmed);
-
-        // Split the correct answer string by '|' and check each possibility.
-        const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
-
-        for (const correctAns of possibleCorrectAnswers) {
-            // Evaluate each possible correct answer to get its numerical value.
-            const correctNumericValue = eval(correctAns);
-
-            // Compare the two numbers with a tolerance for floating-point errors.
-            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
-                return true; // Found a match!
+        
+        // If it's a fraction, calculate its value.
+        if (str.includes('/')) {
+            const parts = str.split('/');
+            if (parts.length === 2) {
+                const numerator = parseFloat(parts[0]);
+                const denominator = parseFloat(parts[1]);
+                // Ensure both parts are numbers and denominator is not zero
+                if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                    return numerator / denominator;
+                }
             }
         }
-    } catch (e) {
-        console.error("Error evaluating answer:", e);
-        // If an error occurs (e.g., division by zero), treat it as incorrect.
-        return false;
-    }
-
-    // If no numerical match was found.
-    return false;
-}
-
-function toggleModal(modalElement, show) {
-    if (!modalElement) {
-        return;
-    }
-    modalElement.classList.toggle('visible', show);
-}
-
-// Function to save the current session state to localStorage
-function saveSessionState() {
-    if (typeof localStorage === 'undefined') {
-        console.warn("localStorage is not available. Session persistence disabled.");
-        return;
-    }
-    const sessionState = {
-        studentEmailForSubmission: studentEmailForSubmission,
-        currentInteractionMode: currentInteractionMode,
-        currentTestFlow: currentTestFlow,
-        currentModuleIndex: currentModuleIndex,
-        currentQuestionNumber: currentQuestionNumber,
-        userAnswers: userAnswers,
-        currentModuleTimeLeft: currentModuleTimeLeft,
-        practiceQuizTimeElapsed: practiceQuizTimeElapsed,
-        isTimerHidden: isTimerHidden,
-        globalOriginPageId: globalOriginPageId,
-        globalQuizSource: globalQuizSource,
+        
+        // Return null if it's not a valid number or fraction
+        return null;
     };
-    try {
-        const serializedState = JSON.stringify(sessionState);
-        localStorage.setItem(SESSION_STORAGE_KEY, serializedState);
-        console.log("DEBUG saveSessionState: Session state saved.");
-    } catch (error) {
-        console.error("Error saving session state to localStorage:", error);
-    }
-}
 
-// Function to clear the saved session state from localStorage
-function clearSessionState() {
-    if (typeof localStorage === 'undefined') {
-        console.warn("localStorage is not available. Cannot clear session state.");
-        return;
+    // --- Main Comparison Logic ---
+
+    // 2. Get the numerical value of the student's answer.
+    const studentNumericValue = getNumericValue(studentAnswerTrimmed);
+
+    // If the student's answer isn't a number, we can't do a numerical comparison.
+    // We'll just do a simple text match as a fallback for non-numeric answers.
+    if (studentNumericValue === null) {
+        return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
     }
-    try {
-        localStorage.removeItem(SESSION_STORAGE_KEY);
-        console.log("DEBUG clearSessionState: Session state cleared from localStorage.");
-    } catch (error) {
-        console.error("Error clearing session state from localStorage:", error);
+
+    // 3. Split the correct answer string by '|' and check each possibility.
+    const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
+
+    for (const correctAns of possibleCorrectAnswers) {
+        // 4. Get the numerical value of the current correct answer option.
+        const correctNumericValue = getNumericValue(correctAns);
+
+        // 5. If both are valid numbers, compare them with a tolerance for floating-point errors.
+        if (correctNumericValue !== null) {
+            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
+                return true; // Found a numerical match!
+            }
+        }
     }
+
+    // 6. If no numerical match was found.
+    return false;
 }
 
 
