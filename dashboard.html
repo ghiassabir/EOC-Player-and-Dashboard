@@ -48,6 +48,10 @@
     </div>
     <div id="loader" class="loader"><p>Loading results...</p></div>
 
+    <!-- ADD THESE TWO LINES FOR MATHJAX -->
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
         const loader = document.getElementById('loader');
@@ -181,6 +185,12 @@
                 <p><strong>Explanation:</strong></p>
                 <pre>${q.explanation_ai_enhanced || q.explanation_original || 'Not available.'}</pre>
             `;
+            // ADDED FOR MATHJAX
+        // This tells MathJax to look for and render any math in the new content.
+        if (window.MathJax) {
+            window.MathJax.typesetPromise([feedbackContent])
+                .catch((err) => console.log('MathJax typesetting error:', err));
+        }
             document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
         }
     });
