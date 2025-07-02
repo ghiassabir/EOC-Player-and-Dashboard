@@ -175,32 +175,77 @@
         } catch (error) {
             loader.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
         }
-        
-        function displayFeedback(q) {
-            const feedbackContent = document.getElementById('feedback-content');
-            const statusClass = q.is_correct ? 'status-correct' : 'status-incorrect';
-            
-            let questionDisplay = `<p><b>${q.question_stem || 'Question text not available.'}</b></p>`;
-            if (q.passage_content) {
-                questionDisplay = `<p><em>${q.passage_content}</em></p>` + questionDisplay;
-            }
 
-            feedbackContent.innerHTML = `
-                <p><strong class="${statusClass}">${q.is_correct ? 'Correct' : 'Incorrect'}</strong></p>
-                <div class="question-text">${questionDisplay}</div>
-                <p><strong>Your Answer:</strong> ${q.student_answer || "Not Answered"}</p>
-                <p><strong>Correct Answer:</strong> ${q.correct_answer}</p>
-                <p><strong>Explanation:</strong></p>
-                <div class="explanation-text">${q.explanation_ai_enhanced || q.explanation_original || 'Not available.'}</div>
-            `;
-            // ADDED FOR MATHJAX
-        // This tells MathJax to look for and render any math in the new content.
-        if (window.MathJax) {
-            window.MathJax.typesetPromise([feedbackContent])
-                .catch((err) => console.log('MathJax typesetting error:', err));
-        }
-            document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
-        }
+        function displayFeedback(q) {
+    const feedbackContent = document.getElementById('feedback-content');
+    feedbackContent.innerHTML = ''; // Clear previous content
+
+    const statusClass = q.is_correct ? 'status-correct' : 'status-incorrect';
+
+    // Status (Correct/Incorrect)
+    const statusP = document.createElement('p');
+    const statusStrong = document.createElement('strong');
+    statusStrong.className = statusClass;
+    statusStrong.textContent = q.is_correct ? 'Correct' : 'Incorrect';
+    statusP.appendChild(statusStrong);
+    feedbackContent.appendChild(statusP);
+
+    // Question Text Container
+    const questionTextDiv = document.createElement('div');
+    questionTextDiv.className = 'question-text';
+
+    // Add passage if it exists
+    if (q.passage_content) {
+        const passageP = document.createElement('p');
+        const passageEm = document.createElement('em');
+        passageEm.textContent = q.passage_content;
+        passageP.appendChild(passageEm);
+        questionTextDiv.appendChild(passageP);
+    }
+
+    // Add question stem
+    const questionStemP = document.createElement('p');
+    const questionStemB = document.createElement('b');
+    // Set the question stem using textContent to avoid HTML parsing issues
+    questionStemB.textContent = q.question_stem || 'Question text not available.';
+    questionStemP.appendChild(questionStemB);
+    questionTextDiv.appendChild(questionStemP);
+    
+    feedbackContent.appendChild(questionTextDiv);
+
+    // Your Answer
+    const yourAnswerP = document.createElement('p');
+    yourAnswerP.innerHTML = `<strong>Your Answer:</strong> `; // innerHTML is fine for static, trusted text
+    yourAnswerP.appendChild(document.createTextNode(q.student_answer || "Not Answered"));
+    feedbackContent.appendChild(yourAnswerP);
+
+    // Correct Answer
+    const correctAnswerP = document.createElement('p');
+    correctAnswerP.innerHTML = `<strong>Correct Answer:</strong> `;
+    correctAnswerP.appendChild(document.createTextNode(q.correct_answer));
+    feedbackContent.appendChild(correctAnswerP);
+
+    // Explanation Header
+    const explanationHeaderP = document.createElement('p');
+    explanationHeaderP.innerHTML = `<strong>Explanation:</strong>`;
+    feedbackContent.appendChild(explanationHeaderP);
+
+    // Explanation Text
+    const explanationDiv = document.createElement('div');
+    explanationDiv.className = 'explanation-text';
+    // Set the explanation using textContent
+    explanationDiv.textContent = q.explanation_ai_enhanced || q.explanation_original || 'Not available.';
+    feedbackContent.appendChild(explanationDiv);
+
+    // Tell MathJax to typeset the new content
+    if (window.MathJax) {
+        window.MathJax.typesetPromise([feedbackContent])
+            .catch((err) => console.log('MathJax typesetting error:', err));
+    }
+
+    document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
+}
+       
     });
     </script>
 </body>
