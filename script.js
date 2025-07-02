@@ -1,6 +1,79 @@
 // --- script.js (Complete, Consolidated, and Corrected for Session Persistence - Part 1 of 6) ---
 
 // --- Utility Functions (Define these FIRST) ---
+
+// --- ADD THIS NEW HELPER FUNCTION ---
+/**
+ * Checks if a student's SPR answer is numerically equivalent to any of the possible correct answers.
+ * Handles fractions, decimals, and whole numbers.
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string} correctAnswerString The string from the JSON, which may contain multiple answers separated by '|'.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
+function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
+    if (!studentAnswer || !correctAnswerString) {
+        return false;
+    }
+
+    const possibleCorrectAnswers = correctAnswerString.split('|').map(s => s.trim());
+    const studentAnswerTrimmed = studentAnswer.trim();
+
+    // Direct string match check first (for non-numeric answers)
+    if (possibleCorrectAnswers.includes(studentAnswerTrimmed)) {
+        return true;
+    }
+
+    // Attempt numerical comparison
+    try {
+        let studentValue;
+        // Evaluate student's answer if it's a fraction
+        if (studentAnswerTrimmed.includes('/')) {
+            const parts = studentAnswerTrimmed.split('/');
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
+                studentValue = parseFloat(parts[0]) / parseFloat(parts[1]);
+            } else {
+                return false; // Invalid fraction format
+            }
+        } else {
+            studentValue = parseFloat(studentAnswerTrimmed);
+        }
+
+        if (isNaN(studentValue)) {
+            return false; // Student's answer is not a valid number or fraction
+        }
+
+        // Check if the student's numerical value matches any of the possible correct numerical values
+        for (const correctAns of possibleCorrectAnswers) {
+            let correctValue;
+            if (correctAns.includes('/')) {
+                const parts = correctAns.split('/');
+                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
+                    correctValue = parseFloat(parts[0]) / parseFloat(parts[1]);
+                } else {
+                    continue; // Skip invalid correct answer format
+                }
+            } else {
+                correctValue = parseFloat(correctAns);
+            }
+
+            if (!isNaN(correctValue)) {
+                // Use a small tolerance (epsilon) for comparing floating-point numbers
+                if (Math.abs(studentValue - correctValue) < 0.001) {
+                    return true;
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Error during numerical answer evaluation:", e);
+        return false;
+    }
+
+    return false; // Return false if no match is found
+}
+
+
+
+
 function toggleModal(modalElement, show) {
     if (!modalElement) {
         return;
@@ -1106,6 +1179,8 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                 }
                 let studentAnswerForSubmission = "";
                 let isCorrect = false;
+                
+                /*
                 if (answerState.question_type_from_json === 'student_produced_response') {
                     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
@@ -1114,7 +1189,13 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                             isCorrect = true;
                         }
                     }
-                } else {
+                } 
+                */
+                if (answerState.question_type_from_json === 'student_produced_response') {
+    studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
+    // Call the new helper function for intelligent checking
+    isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, answerState.correct_ans);
+    } else {
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
                         isCorrect = (String(studentAnswerForSubmission).trim().toLowerCase() === String(answerState.correct_ans).trim().toLowerCase());
