@@ -10,39 +10,61 @@
  * @param {string} correctAnswerString The string from the JSON, which may contain multiple answers separated by '|'.
  * @returns {boolean} True if the answer is correct, false otherwise.
  */
-function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
-    if (!studentAnswer || !correctAnswerString) {
+
+    // --- ADD THIS NEW HELPER FUNCTION (or REPLACE the old one) ---
+
+/**
+ * Checks if a student's SPR answer is numerically equivalent to any of the possible correct answers.
+ * This version is more robust and handles different data types and formats.
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswer The correct answer from the JSON, which could be a string or a number.
+ * @returns {boolean} True if the answer is correct, false otherwise.
+ */
+function isSprAnswerCorrect(studentAnswer, correctAnswer) {
+    // Guard against null, undefined, or empty inputs
+    if (studentAnswer === null || studentAnswer === undefined || correctAnswer === null || correctAnswer === undefined) {
         return false;
     }
 
-    const possibleCorrectAnswers = correctAnswerString.split('|').map(s => s.trim());
-    const studentAnswerTrimmed = studentAnswer.trim();
+    // Ensure both inputs are treated as strings for consistent processing
+    const studentAnswerString = String(studentAnswer).trim();
+    const correctAnswerString = String(correctAnswer).trim();
 
-    // Direct string match check first (for non-numeric answers)
-    if (possibleCorrectAnswers.includes(studentAnswerTrimmed)) {
+    if (studentAnswerString === "" || correctAnswerString === "") {
+        return false;
+    }
+
+    // Get all possible correct answers, separated by pipes
+    const possibleCorrectAnswers = correctAnswerString.split('|').map(s => s.trim());
+
+    // First, try a direct, case-insensitive string comparison. This is for non-numeric answers.
+    const studentAnswerLower = studentAnswerString.toLowerCase();
+    const possibleCorrectAnswersLower = possibleCorrectAnswers.map(s => s.toLowerCase());
+    if (possibleCorrectAnswersLower.includes(studentAnswerLower)) {
         return true;
     }
 
-    // Attempt numerical comparison
+    // Next, try numerical comparison for fractions, decimals, etc.
     try {
         let studentValue;
-        // Evaluate student's answer if it's a fraction
-        if (studentAnswerTrimmed.includes('/')) {
-            const parts = studentAnswerTrimmed.split('/');
+        // Evaluate student's answer if it's a fraction (e.g., "5/2")
+        if (studentAnswerString.includes('/')) {
+            const parts = studentAnswerString.split('/');
             if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parseFloat(parts[1]) !== 0) {
                 studentValue = parseFloat(parts[0]) / parseFloat(parts[1]);
             } else {
                 return false; // Invalid fraction format
             }
         } else {
-            studentValue = parseFloat(studentAnswerTrimmed);
+            studentValue = parseFloat(studentAnswerString);
         }
 
+        // If student's answer can't be converted to a number, stop here.
         if (isNaN(studentValue)) {
-            return false; // Student's answer is not a valid number or fraction
+            return false;
         }
 
-        // Check if the student's numerical value matches any of the possible correct numerical values
+        // Now, check if the student's number matches any of the possible correct numbers
         for (const correctAns of possibleCorrectAnswers) {
             let correctValue;
             if (correctAns.includes('/')) {
@@ -56,11 +78,9 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
                 correctValue = parseFloat(correctAns);
             }
 
-            if (!isNaN(correctValue)) {
-                // Use a small tolerance (epsilon) for comparing floating-point numbers
-                if (Math.abs(studentValue - correctValue) < 0.001) {
-                    return true;
-                }
+            // Compare the numerical values with a small tolerance for floating-point inaccuracies
+            if (!isNaN(correctValue) && Math.abs(studentValue - correctValue) < 0.001) {
+                return true; // Found a numerical match!
             }
         }
     } catch (e) {
@@ -68,11 +88,8 @@ function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
         return false;
     }
 
-    return false; // Return false if no match is found
+    return false; // If no match was found after all checks
 }
-
-
-
 
 function toggleModal(modalElement, show) {
     if (!modalElement) {
@@ -1193,11 +1210,15 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                     }
                 } 
                 */
-                if (answerState.question_type_from_json === 'student_produced_response') {
+             if (answerState.question_type_from_json === 'student_produced_response') {
     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
-    // Call the new helper function for intelligent checking
-    isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, answerState.correct_ans);
-    } else {
+    if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
+        const correctSprAnswers = String(answerState.correct_ans).split('|').map(s => s.trim().toLowerCase());
+        if (correctSprAnswers.includes(studentAnswerForSubmission.trim().toLowerCase())) {
+            isCorrect = true;
+        }
+    }
+} else {
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
                         isCorrect = (String(studentAnswerForSubmission).trim().toLowerCase() === String(answerState.correct_ans).trim().toLowerCase());
