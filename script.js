@@ -1,6 +1,90 @@
 // --- script.js (Complete, Consolidated, and Corrected for Session Persistence - Part 1 of 6) ---
 
 // --- Utility Functions (Define these FIRST) ---
+
+/**
+ * Checks if a student's SPR answer is numerically correct, handling different formats.
+ * This corrected version properly evaluates and compares various numerical string formats
+ * such as "1.5" and "3/2".
+ *
+ * @param {string} studentAnswer The answer provided by the student.
+ * @param {string|number} correctAnswerString The correct answer string from the JSON, which may contain multiple correct answers separated by "|".
+ * @returns {boolean} True if the student's answer is numerically equivalent to any of the correct answers, otherwise false.
+ */
+function isSprAnswerCorrect(studentAnswer, correctAnswerString) {
+    // 1. Guard against null, undefined, or empty inputs
+    if (studentAnswer === null || studentAnswer === undefined || correctAnswerString === null || correctAnswerString === undefined) {
+        return false;
+    }
+
+    const studentAnswerTrimmed = String(studentAnswer).trim();
+    const correctAnswerRaw = String(correctAnswerString).trim();
+
+    if (studentAnswerTrimmed === "" || correctAnswerRaw === "") {
+        return false;
+    }
+
+    /**
+     * A safe, custom function to get the numerical value of a string that could
+     * be a decimal or a simple fraction (e.g., "3/2").
+     * @param {string} str The string to evaluate.
+     * @returns {number|null} The numerical value, or null if it's not a valid number/fraction.
+     */
+    const getNumericValue = (str) => {
+        // Test for a simple fraction format first
+        if (str.includes('/')) {
+            const parts = str.split('/');
+            if (parts.length === 2) {
+                const numerator = parseFloat(parts[0]);
+                const denominator = parseFloat(parts[1]);
+                // Ensure both parts are numbers and denominator is not zero
+                if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                    return numerator / denominator;
+                }
+            }
+        }
+
+        // If not a fraction, check if it's a valid standalone number
+        if (isFinite(str)) {
+            return parseFloat(str);
+        }
+
+        // Return null if it's neither a valid fraction nor a number
+        return null;
+    };
+
+    // --- Main Comparison Logic ---
+
+    // 2. Get the numerical value of the student's answer.
+    const studentNumericValue = getNumericValue(studentAnswerTrimmed);
+
+    // If the student's answer isn't a valid number, we can't perform a numerical comparison.
+    if (studentNumericValue === null) {
+        // Fallback to a case-insensitive text match for non-numeric answers.
+        return correctAnswerRaw.toLowerCase() === studentAnswerTrimmed.toLowerCase();
+    }
+
+    // 3. Split the correct answer string by '|' and check each possibility.
+    const possibleCorrectAnswers = correctAnswerRaw.split('|').map(s => s.trim());
+
+    for (const correctAns of possibleCorrectAnswers) {
+        // 4. Get the numerical value of the current correct answer option.
+        const correctNumericValue = getNumericValue(correctAns);
+
+        // 5. If both are valid numbers, compare them with a tolerance for floating-point errors.
+        if (correctNumericValue !== null) {
+            // Using a small epsilon to handle floating point inaccuracies
+            if (Math.abs(studentNumericValue - correctNumericValue) < 0.001) {
+                return true; // Found a numerical match!
+            }
+        }
+    }
+
+    // 6. If no numerical match was found after checking all possibilities.
+    return false;
+}
+
+
 function toggleModal(modalElement, show) {
     if (!modalElement) {
         return;
@@ -1106,6 +1190,8 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                 }
                 let studentAnswerForSubmission = "";
                 let isCorrect = false;
+                
+                /*
                 if (answerState.question_type_from_json === 'student_produced_response') {
                     studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
@@ -1114,6 +1200,16 @@ async function submitCurrentModuleData(moduleIndexToSubmit, isFinalSubmission = 
                             isCorrect = true;
                         }
                     }
+                }
+                */
+                // Inside the submitCurrentModuleData function...
+
+                if (answerState.question_type_from_json === 'student_produced_response') {
+                studentAnswerForSubmission = answerState.spr_answer || "NO_ANSWER";
+    
+                // THIS IS THE LINE WHERE THE FUNCTION IS CALLED
+                isCorrect = isSprAnswerCorrect(studentAnswerForSubmission, answerState.correct_ans);
+    
                 } else {
                     studentAnswerForSubmission = answerState.selected || "NO_ANSWER";
                     if (answerState.correct_ans && studentAnswerForSubmission !== "NO_ANSWER") {
