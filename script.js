@@ -210,6 +210,7 @@ const moduleMetadata = {
     "CBT-T4-RW-M2": { name: "CBT Test 4: R&W Module 2", type: "RW", durationSeconds: 1920, directions: "Directions for CBT-T4 R&W M2..." },
     "CBT-T4-MT-M1": { name: "CBT Test 4: Math Module 1", type: "Math", durationSeconds: 2100, directions: "Directions for CBT-T4 Math M1...", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` },
     "CBT-T4-MT-M2": { name: "CBT Test 4: Math Module 2", type: "Math", durationSeconds: 2100, directions: "Directions for CBT-T4 Math M2...", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` },
+    "CBQ-M-GT-AV": { name: "College Board Questions: Geometry & Trignometry - Area & Volume", type: "Math", durationSeconds: 2100, directions: "Directions for CBT-T4 Math M2...", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` },
     "SampleMathQuiz": { name: "Sample Math Practice", type: "Math", directions: "Solve these math problems.", spr_directions: `<h3>SPR Directions...</h3>`, spr_examples_table: `<table class="spr-examples-table">...</table>` }
 };
 
