@@ -3,6 +3,9 @@
 // --- Utility Functions (Define these FIRST) ---
 
 // --- ADD THIS NEW HELPER FUNCTION ---
+const questionImageEl = document.getElementById('question-image');
+const passageImageEl = document.getElementById('passage-image');
+
 
 /**
  * Checks if a student's SPR answer is numerically correct, handling different formats.
