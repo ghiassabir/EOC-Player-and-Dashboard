@@ -3,8 +3,7 @@
 // --- Utility Functions (Define these FIRST) ---
 
 // --- ADD THIS NEW HELPER FUNCTION ---
-//const questionImageEl = document.getElementById('question-image');
-//const passageImageEl = document.getElementById('passage-image');
+
 
 
 /**
