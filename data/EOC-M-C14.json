@@ -303,8 +303,9 @@
     "feedback_a": "This choice is incorrect. Check your cross-multiplication and algebra.",
     "feedback_b": "This choice is incorrect. Ensure you've set up the slope formula correctly.",
     "feedback_c": "This choice is incorrect. Double-check the final division step.",
-    "feedback_d": "This is the correct answer. Plugging x=10 into the slope formula gives $\\frac{10-4}{10-1} = \\frac{6}{9} = \\frac{2}{3}$."
-  },
+    "feedback_d": "This is the correct answer. Plugging x=10 into the slope formula gives $\\frac{10-4}{10-1} = \\frac{6}{9} = \\frac{2}{3}$.",
+    "question_stem": "A line with a slope of 2/3 passes through the points (1, 4) and (x, 10). What is the value of x?"
+ },
   {
     "question_id": "EOC-M-C14-12",
     "source_file_name": "Math - Chapter 14 - Lines - Q&A.pdf",
