@@ -244,8 +244,8 @@
     const explanationDiv = document.createElement('div');
     explanationDiv.className = 'explanation-text';
    // Set the explanation using innerHTML to render formatting
-// explanationDiv.innerHTML = q.explanation_ai_enhanced || q.explanation_original || 'Not available.';
-    explanationDiv.innerHTML = "This is a test. Can you see these spaces?";
+explanationDiv.innerHTML = q.explanation_ai_enhanced || q.explanation_original || 'Not available.';
+ //   explanationDiv.innerHTML = "This is a test. Can you see these spaces?";
             feedbackContent.appendChild(explanationDiv);
 
     // Tell MathJax to typeset the new content
