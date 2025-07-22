@@ -319,7 +319,7 @@
     "Sub_Classification": "Graphing",
     "Concept_Classification": "AdvMath_Function_Transformations",
     "question_type": "multiple_choice",
-    "image_url": "EOC-M-C16-12_image.png",
+    "image_url": null,
     "option_a": "A translation 2 units downward",
     "option_b": "A translation 6 units upward",
     "option_c": "A translation 2 units to the left",
@@ -752,6 +752,8 @@
     "feedback_b": "This is incorrect. The function value is a constant 10.",
     "feedback_c": "This is incorrect. The function value is a constant 10.",
     "feedback_d": "This is the correct answer. The conditions force the linear function to be a horizontal line $f(x)=10$."
+    "passage_content": null,
+    "question_stem": "If f(x) is a linear function such that f(2) ≤ f(3), f(4) ≥ f(5), and f(6) = 10, which of the following must be true?"
   },
   {
     "question_id": "EOC-M-C16-28",
