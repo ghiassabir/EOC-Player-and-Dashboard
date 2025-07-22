@@ -751,7 +751,7 @@
     "feedback_a": "This would imply a non-constant function, which contradicts the given conditions.",
     "feedback_b": "This is incorrect. The function value is a constant 10.",
     "feedback_c": "This is incorrect. The function value is a constant 10.",
-    "feedback_d": "This is the correct answer. The conditions force the linear function to be a horizontal line $f(x)=10$."
+    "feedback_d": "This is the correct answer. The conditions force the linear function to be a horizontal line $f(x)=10$.",
     "passage_content": null,
     "question_stem": "If f(x) is a linear function such that f(2) ≤ f(3), f(4) ≥ f(5), and f(6) = 10, which of the following must be true?"
   },
