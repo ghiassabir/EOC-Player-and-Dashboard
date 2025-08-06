@@ -474,33 +474,5 @@
     "feedback_d": "This is incorrect, as the mean clearly changes.",
     "passage_content": null,
     "question_stem": "The table above lists the amounts of snowfall, to the nearest inch, experienced by 18 different cities in the past year. The outlier measurement of 90 inches is an error. Of the mean, median, and range of the values listed, which will change the most if the 90-inch measurement is replaced by the correct measurement of 20 inches?"
-  },
-  {
-    "question_id": "EOC-M-C27-18",
-    "source_file_name": "Math - Chapter 27 - Statistics I - Q&A.pdf",
-    "subject": "Math",
-    "quiz_name": "EOC-M-C27",
-    "question_number": 18,
-    "difficulty": "Hard",
-    "domain": "Problem-Solving & Data Analysis",
-    "Primary_Classification": "Graphical_Analysis",
-    "Sub_Classification": "Interpretation",
-    "Concept_Classification": "Data_Read_Bar_Chart",
-    "question_type": "multiple_choice",
-    "image_url": "EOC-M-C27-18_image.png",
-    "option_a": "Box plot with min=12, q1=15, med=21, q3=28, max=40",
-    "option_b": "Box plot with min=12, q1=15, med=25, q3=32, max=40",
-    "option_c": "Box plot with min=12, q1=15, med=25, q3=28, max=40",
-    "option_d": "Box plot with min=12, q1=21, med=25, q3=28, max=40",
-    "option_e": null,
-    "correct_answer": "Box plot with min=12, q1=15, med=25, q3=28, max=40",
-    "explanation_original": "To construct the box plot, we need to know the minimum number and maximum number of lectures given, the median, the first quartile, and the third quartile. The table indicates that the minimum is 12 and the maximum is 40. The median is the average of the $90 / 2 = 45$th and 46th professors...the 45th and 46th professors both gave 25 lectures, so the median is 25...The first quartile is the median of the first 45 professors, represented by the $45 / 2 = 22.5 \\rightarrow 23$rd professor...the 23rd professor gave 15 lectures, so the first quartile is 15...The third quartile is the median of the last 45 professors...the 68th professor overall...gave 28 lectures, so the third quartile is 28. Now that we have these statistics (min: 12, q1: 15, med: 25, q3: 28, max: 40), we can see that the correct boxplot is the one in answer choice C.",
-    "explanation_ai_enhanced": "We need to find the 5-number summary (min, Q1, median, Q3, max). Min=12, Max=40. Total professors = 90. Median: Average of the 45th and 46th values. Cumulative freq: 12 lectures (15 profs), 15 lectures (12 profs, cum=27), 21 lectures (6 profs, cum=33), 25 lectures (20 profs, cum=53). The 45th and 46th professors fall here. Median = 25. First Quartile (Q1): Median of the first 45 profs, so the 23rd prof. The 23rd professor is in the '15 lectures' group. Q1 = 15. Third Quartile (Q3): Median of the last 45 profs. This is the $45+23 = 68$th professor overall. Cumulative freq... 25 lectures (cum=53), 28 lectures (17 profs, cum=70). The 68th prof is in this group. Q3 = 28. The summary is: min=12, Q1=15, med=25, Q3=28, max=40.",
-    "feedback_a": "This is incorrect. The median is 25, not 21.",
-    "feedback_b": "This is incorrect. The third quartile (Q3) is 28, not 32.",
-    "feedback_c": "This is the correct answer. The calculated five-number summary (min: 12, Q1: 15, median: 25, Q3: 28, max: 40) perfectly matches this box plot.",
-    "feedback_d": "This is incorrect. The first quartile (Q1) is 15, not 21.",
-    "passage_content": null,
-    "question_stem": "The table above summarizes the distribution of the number of lectures each of the 90 professors at a college gave last year. Which of the following box plots correctly represents the data shown in the table?"
   }
 ]
