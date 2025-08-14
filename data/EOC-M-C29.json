@@ -137,7 +137,7 @@
     "feedback_c": "",
     "feedback_d": "",
     "passage_content": null,
-    "question_stem": "A clay brick in the shape of a right rectangular prism has a length of $6$ inches, a width that is $25% greater than its length, and a height that is $2$ inches shorter than its length. The brick has a mass of $5.85$ kilograms. What is the density, in grams per cubic inch, of the brick?"
+    "question_stem": "A clay brick in the shape of a right rectangular prism has a length of $6$ inches, a width that is $25\\%$ greater than its length, and a height that is $2$ inches shorter than its length. The brick has a mass of $5.85$ kilograms. What is the density, in grams per cubic inch, of the brick?" 
   },
   {
     "question_id": "EOC-M-C29-6",
